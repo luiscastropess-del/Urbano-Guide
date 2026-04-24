@@ -33,16 +33,19 @@ export async function updateGuideStatus(profileId: string, status: string, commi
     data
   });
 
-  // If approved, ensure user has guide role
+  // If approved, ensure user has guide role or keep admin
   if (status === "APPROVED") {
-     await db.user.update({
-       where: { id: profile.userId },
-       data: { role: "guide" }
-     });
+     const existingUser = await db.user.findUnique({ where: { id: profile.userId }});
+     if (existingUser && existingUser.role !== "admin") {
+       await db.user.update({
+         where: { id: profile.userId },
+         data: { role: "guide" }
+       });
+     }
   } else if (status === "BLOCKED" || status === "REJECTED") {
      // Optional: downgrade role to user if they are blocked
      const existingUser = await db.user.findUnique({ where: { id: profile.userId }});
-     if (existingUser?.role === "guide") {
+     if (existingUser && existingUser.role !== "admin") {
         await db.user.update({
            where: { id: profile.userId },
            data: { role: "user" }

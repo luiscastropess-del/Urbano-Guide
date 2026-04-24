@@ -12,11 +12,11 @@ export async function getGuideProfile() {
       where: { userId: user.id },
     });
 
-    if (!profile && user.role === "guide") {
+    if (!profile && (user.role === "guide" || user.role === "admin")) {
       profile = await db.guideProfile.create({
         data: {
           userId: user.id,
-          status: "APPROVED", // Auto-approve if they already have the role somehow
+          status: "APPROVED", // Auto-approve if they already have the role or are admin
         },
       });
     }
@@ -36,9 +36,13 @@ export async function registerAsGuide(data: { bio: string; languages: string[]; 
   });
 
   if (existing) {
+    const isUpdatingToApproved = user.role === "admin" && existing.status !== "APPROVED";
     return await db.guideProfile.update({
       where: { userId: user.id },
-      data,
+      data: {
+        ...data,
+        ...(isUpdatingToApproved ? { status: "APPROVED" } : {})
+      },
     });
   }
 
@@ -48,7 +52,7 @@ export async function registerAsGuide(data: { bio: string; languages: string[]; 
       bio: data.bio,
       languages: data.languages,
       pixKey: data.pixKey,
-      status: "PENDING",
+      status: user.role === "admin" ? "APPROVED" : "PENDING",
     },
   });
 
