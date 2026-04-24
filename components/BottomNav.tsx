@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Compass, Heart, Camera, Calendar, User } from "lucide-react";
+import { Compass, Heart, Camera, Calendar, User, Package } from "lucide-react";
 import { useToast } from "./ToastProvider";
 
 export function BottomNav() {
@@ -38,10 +38,10 @@ export function BottomNav() {
       </div>
 
       <NavItem
-        href="/events"
-        icon={<Calendar size={24} />}
-        label="Eventos"
-        active={pathname?.startsWith("/events")}
+        href="/pacotes"
+        icon={<Package size={24} />}
+        label="Pacotes"
+        active={pathname?.startsWith("/pacotes")}
       />
       <NavItem
         href="/profile"
