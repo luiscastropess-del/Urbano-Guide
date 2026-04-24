@@ -118,12 +118,20 @@ export default function GuideDashboardPage() {
           <h1 className="text-3xl font-bold">Olá, {user?.name.split(" ")[0]}! 👋</h1>
           <p className="text-slate-500 mt-1">Bem-vindo(a) de volta ao seu painel de operações.</p>
         </div>
-        <Link 
-          href="/dashboard/guia/roteiros/novo" 
-          className="flex items-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-medium transition shadow-lg shadow-orange-500/20"
-        >
-          <Plus size={18} /> Novo Roteiro
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link 
+            href="/dashboard/guia/reservas" 
+            className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-medium transition shadow-sm"
+          >
+            <CalendarIcon size={18} /> Reservas
+          </Link>
+          <Link 
+            href="/dashboard/guia/roteiros/novo" 
+            className="flex items-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-medium transition shadow-lg shadow-orange-500/20"
+          >
+            <Plus size={18} /> Novo Roteiro
+          </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -137,8 +145,10 @@ export default function GuideDashboardPage() {
         <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
           <h3 className="font-bold text-lg mb-4">Próximos Passeios</h3>
           <div className="text-center py-10 text-slate-500 text-sm">
-            Nenhuma reserva para os próximos 7 dias. <br/>
-            Que tal compartilhar seus pacotes nas redes sociais?
+            Para ver seus próximos passeios e gerenciar os status (pendentes, pagamentos, etc), acesse o painel completo.
+            <div className="mt-4">
+               <Link href="/dashboard/guia/reservas" className="text-orange-500 font-bold hover:underline">Ver todas as reservas</Link>
+            </div>
           </div>
         </div>
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">

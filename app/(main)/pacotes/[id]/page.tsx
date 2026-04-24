@@ -16,6 +16,7 @@ import {
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getPublicPackages } from "@/app/actions.tours";
+import { createReservation } from "@/app/actions.reservations";
 import Image from "next/image";
 
 export default function PacoteDetailsPage() {
@@ -26,9 +27,14 @@ export default function PacoteDetailsPage() {
   const [pkg, setPkg] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  // Reservation State
+  const [showReservationForm, setShowReservationForm] = useState(false);
+  const [resDate, setResDate] = useState("");
+  const [resGuests, setResGuests] = useState(1);
+  const [resNotes, setResNotes] = useState("");
+  const [creating, setCreating] = useState(false);
+
   useEffect(() => {
-    // In a real scenario we might have a specific getPublicPackage(id)
-    // For now we use the array and find the id
     getPublicPackages().then((data) => {
       const found = data.find((p: any) => p.id === id);
       if (found) {
@@ -37,6 +43,31 @@ export default function PacoteDetailsPage() {
       setLoading(false);
     });
   }, [id]);
+
+  const handleConfirmReservation = async () => {
+    if (!resDate) {
+      showToast("Por favor, selecione uma data.");
+      return;
+    }
+
+    setCreating(true);
+    try {
+      await createReservation({
+        packageId: id,
+        date: resDate,
+        guests: resGuests,
+        notes: resNotes
+      });
+      showToast("Reserva confirmada! Redirecionando...");
+      setTimeout(() => {
+        router.push("/profile");
+      }, 1500);
+    } catch (e: any) {
+      showToast(e.message || "Erro ao realizar reserva.");
+    } finally {
+      setCreating(false);
+    }
+  };
 
   if (loading) {
     return <div className="flex justify-center p-10 h-full items-center"><Clock className="animate-spin text-orange-500" /></div>;
@@ -185,19 +216,61 @@ export default function PacoteDetailsPage() {
       </div>
 
       {/* Footer Fixo: CTA de Reserva */}
-      <div className="absolute bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-5 py-4 flex items-center justify-between z-20">
-         <div>
-            <p className="text-xs font-medium text-slate-500 mb-0.5">Preço por pessoa</p>
-            <p className="text-2xl font-black text-slate-800 dark:text-white">
-              R$ {pkg.price.toFixed(2)}
-            </p>
-         </div>
-         <button 
-           onClick={() => showToast("Funcionalidade de reserva será integrada ao gateway de pagamento!")}
-           className="bg-orange-500 hover:bg-orange-600 text-white rounded-2xl px-6 py-3.5 font-bold shadow-lg shadow-orange-500/30 transition-transform active:scale-95 flex items-center gap-2"
-         >
-           Reservar Agora <Calendar size={18} />
-         </button>
+      <div className={`absolute bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-5 transition-all duration-300 z-20 ${showReservationForm ? 'py-5 h-[auto]' : 'py-4'}`}>
+         
+         {!showReservationForm ? (
+           <div className="flex items-center justify-between">
+             <div>
+                <p className="text-xs font-medium text-slate-500 mb-0.5">Preço por pessoa</p>
+                <p className="text-2xl font-black text-slate-800 dark:text-white">
+                  R$ {pkg.price.toFixed(2)}
+                </p>
+             </div>
+             <button 
+               onClick={() => setShowReservationForm(true)}
+               className="bg-orange-500 hover:bg-orange-600 text-white rounded-2xl px-6 py-3.5 font-bold shadow-lg shadow-orange-500/30 transition-transform active:scale-95 flex items-center gap-2"
+             >
+               Reservar Agora <Calendar size={18} />
+             </button>
+           </div>
+         ) : (
+           <div className="animate-in slide-in-from-bottom-5">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-bold text-lg">Finalizar Reserva</h3>
+                <button onClick={() => setShowReservationForm(false)} className="text-slate-500 text-sm font-medium">Cancelar</button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-500 mb-1">Data</label>
+                  <input type="date" value={resDate} onChange={e => setResDate(e.target.value)} className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-xl p-3 text-sm" required min={new Date().toISOString().split('T')[0]} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-500 mb-1">Pessoas</label>
+                  <input type="number" min="1" max={pkg.maxPeople || 10} value={resGuests} onChange={e => setResGuests(Number(e.target.value))} className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-xl p-3 text-sm" required />
+                </div>
+              </div>
+              
+              <div className="mb-4">
+                 <label className="block text-xs font-medium text-slate-500 mb-1">Observações para o guia</label>
+                 <textarea value={resNotes} onChange={e => setResNotes(e.target.value)} className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-xl p-3 text-sm" rows={2} placeholder="Ex: Alguém do grupo tem dificuldade de locomoção?"></textarea>
+              </div>
+
+              <div className="flex items-center justify-between mb-4 bg-slate-50 dark:bg-slate-800 p-3 rounded-xl">
+                 <span className="text-sm font-medium">Total ({resGuests} pessoas)</span>
+                 <span className="text-lg font-black text-orange-500">R$ {(pkg.price * resGuests).toFixed(2)}</span>
+              </div>
+
+              <button 
+                onClick={handleConfirmReservation}
+                disabled={creating}
+                className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-2xl px-6 py-3.5 font-bold shadow-lg shadow-orange-500/30 transition-transform active:scale-95 flex items-center justify-center gap-2"
+              >
+                {creating ? <Clock className="animate-spin" size={18} /> : <CheckCircle size={18} />}
+                {creating ? "Processando..." : "Confirmar e Ir para Pagamento"}
+              </button>
+           </div>
+         )}
       </div>
     </div>
   );

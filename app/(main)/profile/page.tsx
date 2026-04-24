@@ -24,6 +24,7 @@ import {
   CircleHelp,
   Clock,
   Check,
+  Calendar,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -249,6 +250,15 @@ export default function ProfilePage() {
                  icon={<MapPin className="text-emerald-500" size={18} />} 
                  label={user.role === "guide" ? "Portal do Guia" : "Seja um Guia Turístico"} 
                  onClick={() => router.push('/dashboard/guia')} 
+              />
+          </div>
+
+          <div className="pb-2">
+             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">Turismo</h4>
+              <ProfileLink 
+                 icon={<Calendar className="text-orange-500" size={18} />} 
+                 label="Minhas Reservas" 
+                 onClick={() => router.push('/profile/reservas')} 
               />
           </div>
 
