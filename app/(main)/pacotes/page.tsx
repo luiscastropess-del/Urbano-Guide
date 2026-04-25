@@ -2,10 +2,10 @@
 
 import { useToast } from "@/components/ToastProvider";
 import { Moon, Bell, Search, MapPin, Calendar as CalendarIcon, Star, Shield, ArrowRight, Package, User, Clock, Compass } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getPublicPackages, getPremiumPackages, getFeaturedCities } from "@/app/actions.tours";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useAnimationFrame } from "framer-motion";
 
 export default function PacotesPage() {
   const { showToast } = useToast();
@@ -18,6 +18,9 @@ export default function PacotesPage() {
   const [loading, setLoading] = useState(true);
 
   const [isPaused, setIsPaused] = useState(false);
+  const x = useMotionValue(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [contentWidth, setContentWidth] = useState(0);
 
   useEffect(() => {
     Promise.all([
@@ -31,6 +34,28 @@ export default function PacotesPage() {
       setLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    if (containerRef.current && featuredCities.length > 0) {
+      setContentWidth(containerRef.current.scrollWidth / 2);
+    }
+  }, [featuredCities, loading]);
+
+  useAnimationFrame((t, delta) => {
+    if (isPaused || contentWidth <= 0) return;
+
+    let moveBy = -1.2 * (delta / 16); 
+    let currentX = x.get();
+    let nextX = currentX + moveBy;
+
+    if (nextX <= -contentWidth) {
+      nextX += contentWidth;
+    } else if (nextX > 0) {
+      nextX -= contentWidth;
+    }
+
+    x.set(nextX);
+  });
 
   const toggleDarkMode = () => {
     document.documentElement.classList.toggle("dark");
@@ -99,77 +124,72 @@ export default function PacotesPage() {
                   <p className="text-slate-500 text-sm font-medium">Explore destinos escolhidos a dedo para você</p>
                </div>
                <Star className="text-amber-500 fill-amber-500 mb-1" size={20} />
-            </div>
-
-            <div className="relative overflow-hidden group/carousel" style={{ height: '420px' }}>
+                       <div className="relative overflow-hidden group/carousel" style={{ height: '480px' }}>
                <motion.div 
-                 className="flex gap-5 absolute px-5"
-                 animate={isPaused ? {} : { x: ["0%", "-50%"] }}
-                 transition={{ 
-                    ease: "linear", 
-                    duration: 40, 
-                    repeat: Infinity,
-                    repeatType: "loop"
-                 }}
+                 ref={containerRef}
+                 className="flex gap-6 absolute px-5 py-4"
+                 style={{ x }}
                  drag="x"
-                 dragConstraints={{ left: -2000, right: 0 }}
+                 dragConstraints={{ left: -contentWidth * 2, right: 0 }}
+                 onDragStart={() => setIsPaused(true)}
+                 onDragEnd={() => setIsPaused(false)}
                  onHoverStart={() => setIsPaused(true)}
                  onHoverEnd={() => setIsPaused(false)}
-                 onTouchStart={() => setIsPaused(true)}
-                 onTouchEnd={() => setIsPaused(false)}
                  whileTap={{ cursor: "grabbing" }}
                >
                   {/* Duplicate the list for infinite scroll effect */}
                   {[...featuredCities, ...featuredCities].map((city, index) => (
                     <div 
                       key={`${city.id || city.name}-${index}`} 
-                      className="flex-shrink-0 w-[300px] h-[400px] relative rounded-[32px] overflow-hidden group cursor-pointer shadow-2xl shadow-black/20 hover:shadow-orange-500/10 transition-all duration-500"
+                      className="flex-shrink-0 w-[280px] h-[440px] relative rounded-[40px] overflow-hidden group cursor-pointer shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:shadow-orange-500/20 transition-all duration-700"
                     >
                       <img 
-                        src={city.coverImage || city.profileImage || `https://picsum.photos/seed/${city.name}/600/800`} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
+                        src={city.coverImage || city.profileImage || `https://picsum.photos/seed/${city.name}/600/1000`} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
                         alt={city.name} 
                         referrerPolicy="no-referrer"
                       />
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/40 to-transparent pt-32 pb-8 px-6 flex flex-col justify-end">
-                         <div className="flex items-center gap-2 mb-2">
-                            <span className="bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md">
+                      
+                      {/* Premium Overlay Gradients */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/90" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                      
+                      <div className="absolute inset-x-0 bottom-0 pt-32 pb-10 px-8 flex flex-col justify-end">
+                         <div className="flex items-center gap-3 mb-3 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                            <span className="bg-white/10 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border border-white/20">
                                {city.state || "SP"}
                             </span>
-                            <div className="h-[1px] flex-1 bg-white/20" />
+                            <div className="h-[1px] flex-1 bg-white/10" />
                          </div>
-                         <h4 className="text-white font-black text-3xl drop-shadow-2xl mb-2 tracking-tight group-hover:translate-x-1 transition-transform duration-300">
+                         <h4 className="text-white font-black text-4xl drop-shadow-2xl mb-3 tracking-tighter transition-all duration-500 group-hover:scale-105 origin-left">
                            {city.name}
                          </h4>
-                         <p className="text-white/70 text-xs font-medium line-clamp-2 leading-relaxed mb-4">
-                           {city.description || `Um destino encantador com experiências únicas que você só encontra aqui.`}
+                         <p className="text-white/60 text-[13px] font-medium line-clamp-2 leading-relaxed mb-6 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-100 translate-y-2 group-hover:translate-y-0">
+                           {city.description || `Um destino fascinante que aguarda sua visita para criar memórias inesquecíveis.`}
                          </p>
-                         <div className="flex items-center gap-2">
-                            <div className="inline-flex items-center gap-2 text-white text-xs font-bold bg-white/10 backdrop-blur-xl border border-white/20 px-4 py-2 rounded-2xl group-hover:bg-orange-500 group-hover:border-orange-400 transition-all duration-300">
-                               Ver Pacotes <ArrowRight size={14} />
+                         <div className="flex items-center justify-between opacity-0 group-hover:opacity-100 transition-all duration-700 delay-200">
+                            <div className="inline-flex items-center gap-3 text-white text-xs font-black bg-orange-500 px-6 py-3 rounded-2xl shadow-xl shadow-orange-500/40 active:scale-95 transition-all">
+                               Explorar <ArrowRight size={16} />
                             </div>
                             <div className="flex -space-x-2">
                                {[1,2,3].map(i => (
-                                 <img key={i} src={`https://i.pravatar.cc/100?img=${i+10}`} className="w-6 h-6 rounded-full border-2 border-black/50" />
+                                 <img key={i} src={`https://i.pravatar.cc/100?img=${i+20}`} className="w-8 h-8 rounded-full border-2 border-black" />
                                ))}
-                               <div className="w-6 h-6 rounded-full border-2 border-black/50 bg-slate-800 flex items-center justify-center text-[8px] text-white font-bold">+12</div>
                             </div>
                          </div>
                       </div>
                       
-                      {/* Top Badges */}
-                      <div className="absolute top-5 left-5 right-5 flex justify-between items-start opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-1 px-3 border border-white/10 text-white text-[10px] font-bold">
-                            #{index % featuredCities.length + 1}
-                         </div>
-                         <div className="bg-amber-500 rounded-full h-8 w-8 flex items-center justify-center shadow-lg">
-                            <Star className="text-white fill-white" size={14} />
+                      {/* Fancy Number Badge */}
+                      <div className="absolute top-8 left-8">
+                         <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center group-hover:bg-orange-500/80 transition-colors duration-500">
+                            <span className="text-white font-black text-sm">{(index % featuredCities.length) + 1}</span>
                          </div>
                       </div>
                     </div>
                   ))}
-              </motion.div>
+               </motion.div>
             </div>
+      </div>
           </div>
         )}
 
