@@ -1,90 +1,50 @@
 "use server";
 
-import { db } from "@/lib/prisma";
+function getApiUrl() {
+  return process.env.GUIDE_API_URL || "https://pguia.onrender.com";
+}
 
 export async function getPublicPackage(id: string) {
-  return await db.tourPackage.findUnique({
-    where: { 
-      id,
-      status: { in: ["PUBLISHED", "PREMIUM"] }
-    },
-    include: {
-      guide: {
-        include: { user: true }
-      },
-      routes: {
-        include: {
-          places: {
-            include: { place: true }
-          }
-        }
-      },
-      _count: { select: { reviews: true } }
-    }
-  });
+  try {
+    const res = await fetch(`${getApiUrl()}/api/public/packages/${id}`, { cache: "no-store" });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching package:", error);
+    return null;
+  }
 }
+
 export async function getPublicPackages() {
-  return await db.tourPackage.findMany({
-    where: { status: { in: ["PUBLISHED", "PREMIUM"] } },
-    include: {
-      guide: {
-        include: { user: true }
-      },
-      routes: {
-        include: {
-          places: {
-            include: { place: true }
-          }
-        }
-      },
-      _count: { select: { reviews: true } }
-    },
-    orderBy: { createdAt: "desc" },
-    take: 50
-  });
+  try {
+    const res = await fetch(`${getApiUrl()}/api/public/packages?limit=50`, { cache: "no-store" });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching packages:", error);
+    return [];
+  }
 }
 
 export async function getPremiumPackages() {
-  return await db.tourPackage.findMany({
-    where: { status: "PREMIUM" },
-    include: {
-      guide: {
-        include: { user: true }
-      },
-      routes: {
-        include: {
-          places: {
-            include: { place: true }
-          }
-        }
-      },
-      _count: { select: { reviews: true } }
-    },
-    orderBy: { createdAt: "desc" },
-    take: 10
-  });
+  try {
+    const pkgs = await getPublicPackages();
+    return pkgs.filter((p: any) => p.status === "PREMIUM").slice(0, 10);
+  } catch (error) {
+    console.error("Error fetching premium packages:", error);
+    return [];
+  }
 }
 
+// Temporary mocks until these are fully removed or migrated
 export async function getFeaturedCities() {
-  return await db.city.findMany({
-    where: { featured: true },
-    orderBy: { createdAt: "desc" }
-  });
+  return [];
 }
 
 export async function getPremiumGuides() {
-  return await db.guideProfile.findMany({
-    where: { status: "APPROVED" },
-    include: { user: true },
-    orderBy: { user: { xp: "desc" } },
-    take: 10
-  });
+  return [];
 }
 
 export async function getAllGuides() {
-  return await db.guideProfile.findMany({
-    where: { status: "APPROVED" },
-    include: { user: true },
-    orderBy: { user: { name: "asc" } }
-  });
+  return [];
 }

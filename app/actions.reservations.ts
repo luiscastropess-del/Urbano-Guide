@@ -17,27 +17,27 @@ export async function createReservation({
   const user = await getUserSession();
   if (!user) throw new Error("Unauthorized");
 
-  const pkg = await db.tourPackage.findUnique({
-    where: { id: packageId },
-  });
+  const apiUrl = process.env.GUIDE_API_URL || "https://pguia.onrender.com";
 
-  if (!pkg) throw new Error("Package not found");
-
-  const totalPrice = pkg.price * guests;
-
-  const reservation = await db.reservation.create({
-    data: {
-      customerId: user.id,
+  const res = await fetch(`${apiUrl}/api/public/reservations`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
       packageId,
-      date: new Date(date),
+      date: new Date(date).toISOString(),
       guests,
       notes,
-      totalPrice,
-      status: "PENDING",
-    },
+      customerName: user.name,
+      customerEmail: user.email
+    })
   });
 
-  return reservation;
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(errorText || "Failed to create reservation");
+  }
+
+  return await res.json();
 }
 
 export async function getCustomerReservations() {

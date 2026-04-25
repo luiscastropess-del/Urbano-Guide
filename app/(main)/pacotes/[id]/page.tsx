@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getPublicPackages } from "@/app/actions.tours";
+import { getPublicPackage } from "@/app/actions.tours";
 import { createReservation } from "@/app/actions.reservations";
 import Image from "next/image";
 
@@ -35,11 +35,8 @@ export default function PacoteDetailsPage() {
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
-    getPublicPackages().then((data) => {
-      const found = data.find((p: any) => p.id === id);
-      if (found) {
-        setPkg(found);
-      }
+    getPublicPackage(id).then((data) => {
+      setPkg(data);
       setLoading(false);
     });
   }, [id]);
