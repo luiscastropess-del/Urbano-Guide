@@ -108,8 +108,7 @@ export default function AdminSidebar() {
       icon: Briefcase, // Note: importing Briefcase (already imported)
       submenus: [
         { title: "Lista de Guias", path: "/admin/guias", icon: UserCheck },
-        { title: "Roteiros & Pacotes", path: "/admin/guias/roteiros", icon: MapPin },
-        { title: "Reservas", path: "/admin/guias/reservas", icon: CreditCard }
+        { title: "Reservas", path: "/admin/reservas", icon: CreditCard }
       ]
     },
     { 

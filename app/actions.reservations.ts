@@ -84,6 +84,28 @@ export async function getGuideReservations() {
     });
 }
 
+export async function cancelReservation(id: string) {
+  const user = await getUserSession();
+  if (!user) throw new Error("Unauthorized");
+
+  const reservation = await db.reservation.findUnique({
+    where: { id }
+  });
+
+  if (!reservation || reservation.customerId !== user.id) {
+    throw new Error("Reservation not found or unauthorized");
+  }
+
+  if (reservation.status !== "PENDING" && reservation.status !== "CONFIRMED") {
+    throw new Error("Cannot cancel reservation in this status");
+  }
+
+  return await db.reservation.update({
+    where: { id },
+    data: { status: "CANCELLED" }
+  });
+}
+
 export async function updateReservationStatus(id: string, status: string) {
     const user = await getUserSession();
     if (!user || user.role !== "guide" && user.role !== "admin") throw new Error("Unauthorized");
