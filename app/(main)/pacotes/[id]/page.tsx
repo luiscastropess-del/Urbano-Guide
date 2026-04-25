@@ -190,11 +190,11 @@ export default function PacoteDetailsPage() {
                          
                          <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-3">
                            <h5 className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Paradas</h5>
-                           <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+                           <div className="flex flex-wrap gap-2 pb-1">
                              {routeInfo.places?.map((p: any, placeIdx: number) => (
-                               <div key={placeIdx} className="bg-white dark:bg-slate-800 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-1">
+                               <div key={placeIdx} className="bg-white dark:bg-slate-800 px-3 py-1.5 rounded-lg text-xs font-medium shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-1">
                                   <span>{p.place?.emoji || '📍'}</span>
-                                  <span className="truncate max-w-[100px]">{p.place?.name}</span>
+                                  <span className="">{p.place?.name}</span>
                                </div>
                              ))}
                              {(!routeInfo.places || routeInfo.places.length === 0) && (
