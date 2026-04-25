@@ -217,6 +217,14 @@ export default function RouteBuilderPage() {
                 </div>
               </div>
            </div>
+
+           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
+             <h3 className="font-bold mb-3 border-b border-slate-100 dark:border-slate-800 pb-2">Vincular a Pacotes</h3>
+             <p className="text-xs text-slate-500 mb-4">Vincule este roteiro a um dos seus pacotes. Você também pode fazer isso gerindo o Pacote.</p>
+             <button onClick={() => router.push("/dashboard/guia/pacotes")} className="w-full bg-orange-50 text-orange-600 hover:bg-orange-100 dark:bg-orange-950/30 dark:hover:bg-orange-900/50 py-2.5 rounded-xl text-sm font-bold transition-colors">
+               Ir para Meus Pacotes
+             </button>
+           </div>
            
            <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-3xl p-5 shadow-sm">
              <h4 className="font-bold flex items-center gap-2 text-amber-700 dark:text-amber-500 mb-2">

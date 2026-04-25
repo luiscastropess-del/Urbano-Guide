@@ -105,7 +105,7 @@ export default function GuidePackagesPage() {
                  </div>
                  
                  <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-                    <button onClick={() => showToast('Funcionalidade em desenvolvimento!')} className="text-sm font-semibold text-orange-500 flex items-center gap-1 group-hover:translate-x-1 transition-transform relative z-10">
+                    <button onClick={() => router.push(`/dashboard/guia/pacotes/${pkg.id}`)} className="text-sm font-semibold text-orange-500 flex items-center gap-1 group-hover:translate-x-1 transition-transform relative z-10">
                       Editar Detalhes <Edit2 size={14} />
                     </button>
                  </div>
