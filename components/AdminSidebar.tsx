@@ -134,14 +134,21 @@ export default function AdminSidebar() {
         { title: "Logs", path: "/admin/tools/logs", icon: History }
       ]
     },
-    { 
+    {
       title: "Configurações", 
       icon: Settings,
       submenus: [
         { title: "Geral", path: "/admin/settings/general", icon: Settings },
         { title: "SEO", path: "/admin/settings/seo", icon: Globe },
-        { title: "Chaves API", path: "/admin/settings/keys", icon: Key },
         { title: "Atualizar Servidor", path: "/admin/settings/server", icon: Database }
+      ]
+    },
+    {
+      title: "Integrações & APIs",
+      icon: Globe,
+      submenus: [
+        { title: "Chaves de API", path: "/admin/settings/keys", icon: Key },
+        { title: "Links de Rota", path: "/admin/settings/routes", icon: Globe }
       ]
     }
   ];

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/prisma';
+import { getApiRouteUrl } from '@/lib/routes';
 
 export async function POST(req: Request) {
   try {
@@ -7,7 +8,9 @@ export async function POST(req: Request) {
 
     if (city && category) {
       // 1. Aciona a busca na API externa 
-      const searchRes = await fetch("http://34.151.205.86:3000/api/search", {
+      const searchRoute = await getApiRouteUrl("PROSPECT_API_SEARCH", "http://34.151.205.86:3000/api/search");
+      
+      const searchRes = await fetch(searchRoute, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ city, category })
@@ -32,7 +35,9 @@ export async function GET() {
 async function fetchResults() {
   try {
     // 2. Coleta os resultados da API externa
-    const res = await fetch("http://34.151.205.86:3000/api/result", { 
+    const resultRoute = await getApiRouteUrl("PROSPECT_API_RESULT", "http://34.151.205.86:3000/api/result");
+
+    const res = await fetch(resultRoute, { 
       cache: "no-store",
       headers: {
         'Accept': 'application/json'
