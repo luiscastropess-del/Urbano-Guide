@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { getPublicPackages, getPremiumPackages, getFeaturedCities, getFeaturedGuides } from "@/app/actions.tours";
 import { useRouter } from "next/navigation";
 import { motion, useMotionValue, useAnimationFrame } from "framer-motion";
+import Image from "next/image";
 
 export default function PacotesPage() {
   const { showToast } = useToast();
@@ -148,8 +149,9 @@ export default function PacotesPage() {
                       key={`${city.id || city.name}-${index}`} 
                       className="flex-shrink-0 w-[280px] h-[440px] relative rounded-[40px] overflow-hidden group cursor-pointer shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:shadow-orange-500/20 transition-all duration-700"
                     >
-                      <img 
+                      <Image 
                         src={city.coverImage || city.profileImage || `https://picsum.photos/seed/${city.name}/600/1000`} 
+                        fill
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
                         alt={city.name} 
                         referrerPolicy="no-referrer"
@@ -178,7 +180,15 @@ export default function PacotesPage() {
                             </div>
                             <div className="flex -space-x-2">
                                {[1,2,3].map(i => (
-                                 <img key={i} src={`https://i.pravatar.cc/100?img=${i+20}`} className="w-8 h-8 rounded-full border-2 border-black" />
+                                 <div key={i} className="relative w-8 h-8 rounded-full border-2 border-black overflow-hidden">
+                                   <Image 
+                                     src={`https://i.pravatar.cc/100?img=${i+20}`} 
+                                     alt={`User ${i}`}
+                                     fill
+                                     className="object-cover"
+                                     referrerPolicy="no-referrer"
+                                   />
+                                 </div>
                                ))}
                             </div>
                          </div>
@@ -219,10 +229,11 @@ export default function PacotesPage() {
                   <div className="flex items-center gap-3 mb-3">
                     <div className="relative h-14 w-14 rounded-2xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200 dark:border-slate-700">
                       {guide.user?.avatar ? (
-                        <img 
+                        <Image 
                           src={guide.user.avatar} 
-                          alt={guide.user.name} 
-                          className="w-full h-full object-cover"
+                          alt={guide.user.name || "Avatar"} 
+                          fill
+                          className="object-cover"
                           referrerPolicy="no-referrer"
                         />
                       ) : (

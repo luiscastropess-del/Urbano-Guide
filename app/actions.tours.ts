@@ -2,6 +2,18 @@
 
 import { db } from "@/lib/prisma";
 
+export async function getRouteUrl(name: string, fallbackUrl: string) {
+  try {
+    const route = await db.apiRoute.findUnique({ where: { name } });
+    if (route && route.isActive) {
+      return route.url;
+    }
+  } catch (error) {
+    console.error(`Error looking up route ${name}:`, error);
+  }
+  return fallbackUrl;
+}
+
 function getApiUrl() {
   return process.env.GUIDE_API_URL || "https://pguia.onrender.com";
 }
@@ -32,7 +44,14 @@ export async function getFeaturedGuides() {
 
 export async function getPublicPackage(id: string) {
   try {
-    const res = await fetch(`${getApiUrl()}/api/public/packages/${id}`, { cache: "no-store" });
+    const baseFallback = `${getApiUrl()}/api/public/packages/{id}`;
+    let url = await getRouteUrl("DETALHES_PACOTE_ESPECIFICADO_API", baseFallback);
+    if (url.includes("{id}")) {
+      url = url.replace("{id}", id);
+    } else {
+      url = url.endsWith("/") ? url + id : url + "/" + id;
+    }
+    const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) return null;
     return await res.json();
   } catch (error) {
@@ -43,7 +62,9 @@ export async function getPublicPackage(id: string) {
 
 export async function getPublicPackages() {
   try {
-    const res = await fetch(`${getApiUrl()}/api/public/packages?limit=50`, { cache: "no-store" });
+    const baseFallback = `${getApiUrl()}/api/public/packages?limit=50`;
+    const url = await getRouteUrl("PACOTES_GERAIS_API", baseFallback);
+    const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) return [];
     return await res.json();
   } catch (error) {
