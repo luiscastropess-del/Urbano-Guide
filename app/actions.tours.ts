@@ -20,22 +20,29 @@ function getApiUrl() {
 
 export async function getFeaturedGuides() {
   try {
-    return await db.guideProfile.findMany({
-      where: {
-        AND: [
-          { status: "APPROVED" },
-          { plan: { in: ["pro", "ultimate"] } }
-        ]
-      },
-      include: {
-        user: {
-          select: {
-            name: true,
-            avatar: true
+    const baseFallback = `${getApiUrl()}/api/public/guides/featured`;
+    const url = await getRouteUrl("GUIDES_API", baseFallback);
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) {
+      // Fallback for when the API is not yet available
+      return await db.guideProfile.findMany({
+        where: {
+          AND: [
+            { status: "APPROVED" },
+            { plan: { in: ["pro", "ultimate"] } }
+          ]
+        },
+        include: {
+          user: {
+            select: {
+              name: true,
+              avatar: true
+            }
           }
         }
-      }
-    });
+      });
+    }
+    return await res.json();
   } catch (error) {
     console.error("Error fetching featured guides:", error);
     return [];

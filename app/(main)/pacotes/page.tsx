@@ -207,13 +207,13 @@ export default function PacotesPage() {
           </div>
         )}
 
-        {/* Featured Guides Section */}
+        {/* Tops Guias Locais Section */}
         {featuredGuides.length > 0 && (
           <div className="px-5 mb-10 overflow-hidden">
             <div className="flex items-center justify-between mb-4">
                <div>
                   <h3 className="font-bold text-xl flex items-center gap-2">
-                    Guias locais em destaque
+                    Tops Guias Locais
                   </h3>
                   <p className="text-slate-500 text-xs">Os profissionais mais bem avaliados</p>
                </div>
@@ -238,7 +238,7 @@ export default function PacotesPage() {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-orange-100 text-orange-600 font-bold text-xl">
-                          {guide.user?.name?.charAt(0)}
+                          {guide.user?.name?.charAt(0) || "G"}
                         </div>
                       )}
                       
@@ -249,10 +249,10 @@ export default function PacotesPage() {
                       )}
                     </div>
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-sm truncate">{guide.user?.name}</h4>
+                      <h4 className="font-bold text-sm truncate">{guide.user?.name || "Guia"}</h4>
                       <div className="flex items-center gap-1 text-amber-500 text-xs font-bold">
                         <Star size={10} className="fill-amber-500" />
-                        {guide.rating.toFixed(1)}
+                        {typeof guide.rating === 'number' ? guide.rating.toFixed(1) : (guide.rating || "5.0")}
                       </div>
                     </div>
                   </div>
@@ -263,12 +263,12 @@ export default function PacotesPage() {
 
                   <div className="grid grid-cols-2 gap-2 mb-4">
                      <div className="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-xl border border-slate-100 dark:border-slate-800">
-                        <p className="text-[9px] text-slate-400 uppercase font-bold tracking-wider">Vendidos</p>
-                        <p className="text-sm font-black text-slate-700 dark:text-slate-200">{guide.packagesSold}</p>
+                        <p className="text-[9px] text-slate-400 uppercase font-bold tracking-wider">Avaliações</p>
+                        <p className="text-sm font-black text-slate-700 dark:text-slate-200">{guide.packagesSold || 0}</p>
                      </div>
                      <div className="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-xl border border-slate-100 dark:border-slate-800">
                         <p className="text-[9px] text-slate-400 uppercase font-bold tracking-wider">KM Rodados</p>
-                        <p className="text-sm font-black text-slate-700 dark:text-slate-200">{guide.totalKm}km</p>
+                        <p className="text-sm font-black text-slate-700 dark:text-slate-200">{guide.totalKm || 0}km</p>
                      </div>
                   </div>
 
