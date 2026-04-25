@@ -130,10 +130,10 @@ export default function PacotesPage() {
                <Star className="text-amber-500 fill-amber-500 mb-1" size={20} />
             </div>
 
-            <div className="relative overflow-hidden group/carousel" style={{ height: '480px' }}>
+            <div className="relative overflow-hidden group/carousel" style={{ height: '360px' }}>
                <motion.div 
                  ref={containerRef}
-                 className="flex gap-6 absolute px-5 py-4"
+                 className="flex gap-4 absolute px-5 py-4"
                  style={{ x }}
                  drag="x"
                  dragConstraints={{ left: -contentWidth * 2, right: 0 }}
@@ -147,7 +147,7 @@ export default function PacotesPage() {
                   {[...featuredCities, ...featuredCities].map((city, index) => (
                     <div 
                       key={`${city.id || city.name}-${index}`} 
-                      className="flex-shrink-0 w-[280px] h-[440px] relative rounded-[40px] overflow-hidden group cursor-pointer shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:shadow-orange-500/20 transition-all duration-700"
+                      className="flex-shrink-0 w-[240px] h-[320px] relative rounded-[32px] overflow-hidden group cursor-pointer shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-700"
                     >
                       <Image 
                         src={city.coverImage || city.profileImage || `https://picsum.photos/seed/${city.name}/600/1000`} 
@@ -161,26 +161,26 @@ export default function PacotesPage() {
                       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/90" />
                       <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                       
-                      <div className="absolute inset-x-0 bottom-0 pt-32 pb-10 px-8 flex flex-col justify-end">
-                         <div className="flex items-center gap-3 mb-3 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                            <span className="bg-white/10 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border border-white/20">
+                      <div className="absolute inset-x-0 bottom-0 pt-20 pb-6 px-6 flex flex-col justify-end">
+                         <div className="flex items-center gap-3 mb-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                            <span className="bg-white/10 backdrop-blur-md text-white text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border border-white/20">
                                {city.state || "SP"}
                             </span>
                             <div className="h-[1px] flex-1 bg-white/10" />
                          </div>
-                         <h4 className="text-white font-black text-4xl drop-shadow-2xl mb-3 tracking-tighter transition-all duration-500 group-hover:scale-105 origin-left">
+                         <h4 className="text-white font-black text-2xl drop-shadow-2xl mb-2 tracking-tighter transition-all duration-500 group-hover:scale-105 origin-left">
                            {city.name}
                          </h4>
-                         <p className="text-white/60 text-[13px] font-medium line-clamp-2 leading-relaxed mb-6 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-100 translate-y-2 group-hover:translate-y-0">
+                         <p className="text-white/60 text-xs font-medium line-clamp-2 leading-relaxed mb-4 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-100 translate-y-2 group-hover:translate-y-0">
                            {city.description || `Um destino fascinante que aguarda sua visita para criar memórias inesquecíveis.`}
                          </p>
                          <div className="flex items-center justify-between opacity-0 group-hover:opacity-100 transition-all duration-700 delay-200">
-                            <div className="inline-flex items-center gap-3 text-white text-xs font-black bg-orange-500 px-6 py-3 rounded-2xl shadow-xl shadow-orange-500/40 active:scale-95 transition-all">
-                               Explorar <ArrowRight size={16} />
+                            <div className="inline-flex items-center gap-2 text-white text-[10px] font-black bg-orange-500 px-4 py-2 rounded-xl shadow-lg shadow-orange-500/40 active:scale-95 transition-all">
+                               Explorar <ArrowRight size={14} />
                             </div>
                             <div className="flex -space-x-2">
                                {[1,2,3].map(i => (
-                                 <div key={i} className="relative w-8 h-8 rounded-full border-2 border-black overflow-hidden">
+                                 <div key={i} className="relative w-6 h-6 rounded-full border border-black overflow-hidden">
                                    <Image 
                                      src={`https://i.pravatar.cc/100?img=${i+20}`} 
                                      alt={`User ${i}`}
@@ -195,8 +195,8 @@ export default function PacotesPage() {
                       </div>
                       
                       {/* Fancy Number Badge */}
-                      <div className="absolute top-8 left-8">
-                         <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center group-hover:bg-orange-500/80 transition-colors duration-500">
+                      <div className="absolute top-5 left-5">
+                         <div className="w-10 h-10 rounded-[14px] bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center group-hover:bg-orange-500/80 transition-colors duration-500">
                             <span className="text-white font-black text-sm">{(index % featuredCities.length) + 1}</span>
                          </div>
                       </div>
@@ -228,17 +228,17 @@ export default function PacotesPage() {
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <div className="relative h-14 w-14 rounded-2xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200 dark:border-slate-700">
-                      {guide.user?.avatar ? (
+                      {(guide.user?.avatar || guide.profileImage) ? (
                         <Image 
-                          src={guide.user.avatar} 
-                          alt={guide.user.name || "Avatar"} 
+                          src={guide.user?.avatar || guide.profileImage} 
+                          alt={guide.user?.name || guide.name || "Avatar"} 
                           fill
                           className="object-cover"
                           referrerPolicy="no-referrer"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-orange-100 text-orange-600 font-bold text-xl">
-                          {guide.user?.name?.charAt(0) || "G"}
+                          {(guide.user?.name || guide.name || "G").charAt(0)}
                         </div>
                       )}
                       
@@ -249,7 +249,7 @@ export default function PacotesPage() {
                       )}
                     </div>
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-sm truncate">{guide.user?.name || "Guia"}</h4>
+                      <h4 className="font-bold text-sm truncate">{guide.user?.name || guide.name || "Guia"}</h4>
                       <div className="flex items-center gap-1 text-amber-500 text-xs font-bold">
                         <Star size={10} className="fill-amber-500" />
                         {typeof guide.rating === 'number' ? guide.rating.toFixed(1) : (guide.rating || "5.0")}
@@ -258,7 +258,7 @@ export default function PacotesPage() {
                   </div>
 
                   <p className="text-[11px] text-slate-500 line-clamp-2 mb-4 h-8">
-                    {guide.bio || "Guia especialista certificado pronto para transformar sua viagem em uma experiência inesquecível."}
+                    {guide.bio || guide.description || "Guia especialista certificado pronto para transformar sua viagem em uma experiência inesquecível."}
                   </p>
 
                   <div className="grid grid-cols-2 gap-2 mb-4">
@@ -320,15 +320,15 @@ export default function PacotesPage() {
                   {/* Roteiro Preview */}
                   {pkg.routes && pkg.routes.length > 0 && (
                      <div className="mt-3 flex flex-wrap gap-1.5">
-                       {pkg.routes.flatMap((r: any) => r.places).slice(0, 3).map((p: any, pIdx: number) => (
+                       {pkg.routes.flatMap((r: any) => r.places || []).slice(0, 3).map((p: any, pIdx: number) => (
                          <div key={pIdx} className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 flex items-center gap-1 rounded-md border border-slate-200 dark:border-slate-700">
-                           <span>{p.place?.emoji || '📍'}</span>
-                           <span className="truncate max-w-[80px]">{p.place?.name}</span>
+                           <span>{p?.place?.emoji || '📍'}</span>
+                           <span className="truncate max-w-[80px]">{p?.place?.name}</span>
                          </div>
                        ))}
-                       {pkg.routes.flatMap((r: any) => r.places).length > 3 && (
+                       {pkg.routes.flatMap((r: any) => r.places || []).length > 3 && (
                          <div className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700">
-                           +{pkg.routes.flatMap((r: any) => r.places).length - 3} locais
+                           +{pkg.routes.flatMap((r: any) => r.places || []).length - 3} locais
                          </div>
                        )}
                      </div>
