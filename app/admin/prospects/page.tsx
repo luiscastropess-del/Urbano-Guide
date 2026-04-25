@@ -27,7 +27,7 @@ export default function ProspectsPage() {
         setPlaces(data.places);
       }
     } catch (e) {
-      showToast("Erro ao carregar prospectos", "error");
+      showToast("Erro ao carregar prospectos");
     } finally {
       setLoading(false);
     }
@@ -72,7 +72,7 @@ export default function ProspectsPage() {
   };
 
   const handleBulkAction = async (action: 'delete' | 'enrich') => {
-    if (selectedIds.size === 0) return showToast("Nenhum local selecionado", "warning");
+    if (selectedIds.size === 0) return showToast("Nenhum local selecionado");
 
     if (action === 'delete') {
       if (!confirm(`Tem certeza que deseja excluir ${selectedIds.size} locais?`)) return;
@@ -86,14 +86,14 @@ export default function ProspectsPage() {
         });
         const data = await res.json();
         if (data.success) {
-           showToast(data.message, "success");
+           showToast(data.message);
            setSelectedIds(new Set());
            loadPlaces();
         } else {
-           showToast(data.error || "Erro", "error");
+           showToast(data.error || "Erro");
         }
       } catch (e) {
-         showToast("Erro na requisição", "error");
+         showToast("Erro na requisição");
       } finally {
         setIsProcessing(false);
       }
@@ -109,14 +109,14 @@ export default function ProspectsPage() {
         });
         const data = await res.json();
         if (data.success) {
-           showToast(data.message, "success");
+           showToast(data.message);
            setSelectedIds(new Set());
            loadPlaces();
         } else {
-           showToast(data.error || "Erro ao enriquecer", "error");
+           showToast(data.error || "Erro ao enriquecer");
         }
       } catch (e) {
-         showToast("Erro na requisição de enriquecimento", "error");
+         showToast("Erro na requisição de enriquecimento");
       } finally {
         setIsProcessing(false);
       }
