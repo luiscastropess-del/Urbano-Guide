@@ -17,7 +17,7 @@ export async function createReservation({
   const user = await getUserSession();
   if (!user) throw new Error("Unauthorized");
 
-  const apiUrl = process.env.GUIDE_API_URL || "https://pguia.onrender.com";
+  const apiUrl = "https://pguia.onrender.com";
 
   const res = await fetch(`${apiUrl}/api/public/reservations`, {
     method: "POST",
@@ -44,14 +44,25 @@ export async function getCustomerReservations() {
   const user = await getUserSession();
   if (!user) throw new Error("Unauthorized");
 
-  const apiUrl = process.env.GUIDE_API_URL || "https://pguia.onrender.com";
+  const apiUrl = "https://pguia.onrender.com";
   try {
-     const res = await fetch(`${apiUrl}/api/public/reservations?email=${encodeURIComponent(user.email)}`, { cache: "no-store" });
-     if(res.ok) {
-       return await res.json();
+     const res = await fetch(`${apiUrl}/api/public/reservations?email=${encodeURIComponent(user.email)}`, { 
+       cache: "no-store",
+       headers: {
+         "Content-Type": "application/json"
+       }
+     });
+     
+     if (res.ok) {
+       const data = await res.json();
+       console.log("Reservations fetched successfully:", data.length);
+       return data;
+     } else {
+       const errorText = await res.text();
+       console.error("API Error fetching reservations:", res.status, errorText);
      }
   } catch(e) {
-     console.error("Could not fetch remote customer reservations", e);
+     console.error("Network error fetching reservations:", e);
   }
   return [];
 }
