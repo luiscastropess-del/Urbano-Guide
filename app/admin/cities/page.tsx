@@ -30,20 +30,21 @@ export default function AdminCitiesPage() {
   const [newGalleryUrl, setNewGalleryUrl] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
-  const loadCities = async () => {
+  const loadCities = async (showLoading = false) => {
     try {
-      setLoading(true);
+      if (showLoading) setLoading(true);
       const data = await getCities();
       setCities(data);
     } catch (e) {
-      showToast("Erro ao carregar cidades", "error");
+      showToast("Erro ao carregar cidades");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadCities();
+    loadCities(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleOpenModal = (city?: any) => {
@@ -74,21 +75,24 @@ export default function AdminCitiesPage() {
   };
 
   const handleSave = async () => {
-    if (!formData.name.trim()) return showToast("Nome da cidade é obrigatório", "error");
+    if (!formData.name.trim()) {
+      showToast("Nome da cidade é obrigatório");
+      return;
+    }
     
     setIsSaving(true);
     try {
       if (editingCity) {
         await updateCity(editingCity.id, formData);
-        showToast("Cidade atualizada com sucesso", "success");
+        showToast("Cidade atualizada com sucesso");
       } else {
         await createCity(formData);
-        showToast("Cidade adicionada com sucesso", "success");
+        showToast("Cidade adicionada com sucesso");
       }
       closeModal();
-      loadCities();
+      loadCities(true);
     } catch (e) {
-      showToast("Erro ao salvar cidade", "error");
+      showToast("Erro ao salvar cidade");
     } finally {
       setIsSaving(false);
     }
@@ -98,10 +102,10 @@ export default function AdminCitiesPage() {
     if (!confirm(`Deseja realmente remover a cidade ${name}?`)) return;
     try {
       await deleteCity(id);
-      showToast("Cidade removida", "success");
-      loadCities();
+      showToast("Cidade removida");
+      loadCities(true);
     } catch (e) {
-      showToast("Erro ao remover cidade", "error");
+      showToast("Erro ao remover cidade");
     }
   };
 
