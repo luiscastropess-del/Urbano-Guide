@@ -1,28 +1,11 @@
 "use client";
 
 import { useToast } from "@/components/ToastProvider";
-import {
-  Moon,
-  Bell,
-  Search,
-  MapPin,
-  Calendar as CalendarIcon,
-  Star,
-  Shield,
-  ArrowRight,
-  Package,
-  User,
-  Clock,
-  Compass
-} from "lucide-react";
+import { Moon, Bell, Search, MapPin, Calendar as CalendarIcon, Star, Shield, ArrowRight, Package, User, Clock, Compass } from "lucide-react";
 import { useState, useEffect } from "react";
-import { 
-  getPublicPackages, 
-  getPremiumPackages,
-  getFeaturedCities,
-  getPremiumGuides
-} from "@/app/actions.tours";
+import { getPublicPackages, getPremiumPackages, getFeaturedCities } from "@/app/actions.tours";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 export default function PacotesPage() {
   const { showToast } = useToast();
@@ -31,7 +14,6 @@ export default function PacotesPage() {
   const [packages, setPackages] = useState<any[]>([]);
   const [premiumPackages, setPremiumPackages] = useState<any[]>([]);
   const [featuredCities, setFeaturedCities] = useState<any[]>([]);
-  const [premiumGuides, setPremiumGuides] = useState<any[]>([]);
   
   const [loading, setLoading] = useState(true);
 
@@ -39,13 +21,11 @@ export default function PacotesPage() {
     Promise.all([
       getPublicPackages(),
       getPremiumPackages(),
-      getFeaturedCities(),
-      getPremiumGuides()
-    ]).then(([pkgs, premiumPkgs, cities, guides]) => {
+      getFeaturedCities()
+    ]).then(([pkgs, premiumPkgs, cities]) => {
       setPackages(pkgs);
       setPremiumPackages(premiumPkgs);
       setFeaturedCities(cities);
-      setPremiumGuides(guides);
       setLoading(false);
     });
   }, []);
@@ -107,82 +87,40 @@ export default function PacotesPage() {
         
         {/* Featured Cities Carousel */}
         {featuredCities.length > 0 && (
-          <div className="mt-4 mb-8 pl-5">
-            <h3 className="font-bold text-lg mb-3 flex items-center gap-2 pr-5">
-              Top Destinos <Star className="text-amber-500 fill-amber-500" size={18} />
-            </h3>
-            <div className="flex gap-4 overflow-x-auto scroll-x hide-scroll pb-2 pr-5">
-              {featuredCities.map(city => (
-                <div key={city.id} className="flex-shrink-0 w-44 rounded-3xl overflow-hidden relative shadow-md shadow-orange-500/10 cursor-pointer group aspect-[4/5]">
-                   <img src={city.coverImage || "https://picsum.photos/400/500?nature"} referrerPolicy="no-referrer" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                   <div className="absolute bottom-4 left-4 right-4">
-                      <div className="bg-white/20 backdrop-blur-md rounded-xl p-2.5 border border-white/20">
-                         <h4 className="font-black text-white text-base leading-tight drop-shadow-md">{city.name}</h4>
-                         <p className="text-orange-200 text-[10px] font-bold mt-0.5 max-w-full truncate">{city.state || "SP"}</p>
-                      </div>
-                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Premium Guides Banner / Carousel */}
-        {premiumGuides.length > 0 && (
           <div className="mb-8 px-5">
-            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-5 text-white shadow-xl relative overflow-hidden">
-               <div className="flex justify-between items-center mb-4 relative z-10 w-full">
-                  <div>
-                     <span className="bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2 inline-block">Guias Premium</span>
-                     <h2 className="text-xl font-bold leading-tight">Os Melhores da Região</h2>
-                  </div>
-                  <Shield size={32} className="text-orange-500 shrink-0" />
-               </div>
-               
-               <div className="flex gap-3 overflow-x-auto scroll-x hide-scroll pb-2 relative z-10">
-                  {premiumGuides.map(guide => (
-                     <div key={guide.id} className="flex-shrink-0 w-36 bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-3 flex flex-col items-center text-center cursor-pointer hover:bg-white/20 transition-colors">
-                        <img src={guide.user?.avatar || "https://picsum.photos/100/100?face"} className="w-14 h-14 rounded-full mb-2 object-cover border-2 border-orange-500" />
-                        <h4 className="font-bold text-sm text-white line-clamp-1">{guide.user?.name}</h4>
-                        <div className="flex items-center gap-1 text-orange-400 text-[10px] font-bold mt-1">
-                           <Star size={10} className="fill-orange-400" /> Nível {guide.user?.level || 1}
-                        </div>
-                     </div>
-                  ))}
-               </div>
-            </div>
-          </div>
-        )}
-
-        {/* Premium Packages (Pacotes em Alta) */}
-        {premiumPackages.length > 0 && (
-          <div className="mb-6 px-5">
             <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-              Pacotes em Alta <Star className="text-amber-500 fill-amber-500" size={18} />
+              Cidades em Destaque <Star className="text-amber-500 fill-amber-500" size={18} />
             </h3>
-            <div className="flex gap-4 overflow-x-auto scroll-x hide-scroll pb-4 -mx-5 px-5">
-               {premiumPackages.map(pkg => (
-                 <div key={pkg.id} onClick={() => router.push(`/pacotes/${pkg.id}`)} className="flex-shrink-0 w-72 bg-gradient-to-br from-orange-400 to-amber-500 rounded-3xl p-1 shadow-lg shadow-orange-500/20 cursor-pointer transition-transform hover:scale-[1.02]">
-                    <div className="bg-white dark:bg-slate-900 rounded-[22px] h-full overflow-hidden flex flex-col pointer-events-none p-4">
-                       <div className="flex justify-between items-start mb-2">
-                         <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider h-fit">Mais Vendido</span>
-                         <div className="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl text-xs font-black">
-                           R$ {pkg.price.toFixed(2)}
+            <div className="relative overflow-hidden rounded-3xl" style={{ height: '300px' }}>
+               <motion.div 
+                 className="flex gap-4 absolute"
+                 animate={{ x: ["0%", "-50%"] }}
+                 transition={{ 
+                    ease: "linear", 
+                    duration: 30, 
+                    repeat: Infinity,
+                    repeatType: "loop"
+                 }}
+               >
+                  {/* Duplicate the list for infinite scroll effect */}
+                  {[...featuredCities, ...featuredCities].map((city, index) => (
+                    <div key={`${city.id || city.name}-${index}`} className="flex-shrink-0 w-[260px] h-[300px] relative rounded-3xl overflow-hidden group cursor-pointer shadow-lg shadow-black/10">
+                      <img 
+                        src={city.coverImage || city.profileImage || `https://picsum.photos/seed/${city.name}/400/600`} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                        alt={city.name} 
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-5">
+                         <h4 className="text-white font-black text-2xl drop-shadow-md mb-1">{city.name}</h4>
+                         <p className="text-white/80 text-xs font-medium line-clamp-2">{city.description || `Descubra os melhores roteiros e experiências exclusivas que ${city.name} tem a oferecer.`}</p>
+                         <div className="mt-4 inline-flex items-center gap-1 text-orange-400 text-xs font-bold uppercase tracking-wider backdrop-blur-md bg-white/10 px-3 py-1.5 rounded-full w-fit">
+                            Explorar <ArrowRight size={12} />
                          </div>
-                       </div>
-                       <h4 className="font-bold text-lg leading-tight mb-2 truncate">{pkg.title}</h4>
-                       <p className="text-xs text-slate-500 line-clamp-2 min-h-[32px]">{pkg.description}</p>
-                       <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
-                           <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 bg-orange-100 text-orange-600 rounded-full flex justify-center items-center"><User size={12}/></div>
-                              <span className="text-[10px] font-medium text-slate-600 dark:text-slate-400 truncate max-w-[80px]">{pkg.guide?.user?.name}</span>
-                           </div>
-                           <span className="text-orange-500 text-xs font-bold flex items-center gap-1">Detalhes <ArrowRight size={12}/></span>
-                       </div>
+                      </div>
                     </div>
-                 </div>
-               ))}
+                  ))}
+              </motion.div>
             </div>
           </div>
         )}

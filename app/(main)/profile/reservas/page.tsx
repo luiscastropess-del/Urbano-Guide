@@ -103,7 +103,7 @@ export default function ReservasPage() {
               <div key={res.id} className="bg-white dark:bg-slate-800 p-4 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group">
                 <div className="flex justify-between items-start mb-3">
                   <div className="pr-4">
-                    <h3 className="font-bold text-slate-800 dark:text-slate-100 line-clamp-1">{res.package?.title}</h3>
+                    <h3 className="font-bold text-slate-800 dark:text-slate-100 line-clamp-1">{res.package?.title || "Pacote #"+res.packageId}</h3>
                     <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
                       <MapPin size={12} className="text-orange-500" /> Holambra, SP
                     </div>
@@ -125,14 +125,14 @@ export default function ReservasPage() {
                    </div>
                    <div className="col-span-2 pt-1 mt-1 border-t border-slate-200 dark:border-slate-800">
                       <span className="block text-slate-400 mb-0.5">Guia Responsável</span>
-                      <span className="font-medium">{res.package?.guide?.user?.name || "N/A"}</span>
+                      <span className="font-medium">{res.package?.guide?.user?.name || res.package?.guide?.name || "N/A"}</span>
                    </div>
                 </div>
 
                 <div className="flex flex-col gap-3">
                    <div className="flex justify-between items-center">
                      <div className="text-lg font-black text-slate-800 dark:text-white">
-                        R$ {res.totalPrice.toFixed(2)}
+                        {res.totalPrice !== undefined ? `R$ ${res.totalPrice.toFixed(2)}` : "A Combinar"}
                      </div>
                      <button onClick={() => router.push(`/pacotes/${res.packageId}`)} className="text-xs font-bold text-orange-500 bg-orange-50 dark:bg-orange-950/30 px-3 py-1.5 rounded-lg active:scale-95 transition-transform">
                        Ver Pacote

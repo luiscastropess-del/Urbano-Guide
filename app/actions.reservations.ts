@@ -44,75 +44,23 @@ export async function getCustomerReservations() {
   const user = await getUserSession();
   if (!user) throw new Error("Unauthorized");
 
-  return await db.reservation.findMany({
-    where: { customerId: user.id },
-    include: {
-      package: {
-        include: {
-          guide: {
-            include: { user: true }
-          }
-        }
-      },
-      review: true,
-    },
-    orderBy: { createdAt: "desc" }
-  });
+  const apiUrl = process.env.GUIDE_API_URL || "https://pguia.onrender.com";
+  try {
+     const res = await fetch(`${apiUrl}/api/public/reservations?email=${encodeURIComponent(user.email)}`, { cache: "no-store" });
+     if(res.ok) {
+       return await res.json();
+     }
+  } catch(e) {
+     console.error("Could not fetch remote customer reservations", e);
+  }
+  return [];
 }
 
-export async function getGuideReservations() {
-    const user = await getUserSession();
-    if (!user || user.role !== "guide" && user.role !== "admin") throw new Error("Unauthorized");
-
-    const profile = await db.guideProfile.findUnique({
-        where: { userId: user.id }
-    });
-
-    if (!profile) return [];
-
-    return await db.reservation.findMany({
-        where: {
-            package: {
-                guideId: profile.id
-            }
-        },
-        include: {
-            customer: true,
-            package: true,
-        },
-        orderBy: { createdAt: "desc" }
-    });
-}
 
 export async function cancelReservation(id: string) {
   const user = await getUserSession();
   if (!user) throw new Error("Unauthorized");
 
-  const reservation = await db.reservation.findUnique({
-    where: { id }
-  });
-
-  if (!reservation || reservation.customerId !== user.id) {
-    throw new Error("Reservation not found or unauthorized");
-  }
-
-  if (reservation.status !== "PENDING" && reservation.status !== "CONFIRMED") {
-    throw new Error("Cannot cancel reservation in this status");
-  }
-
-  return await db.reservation.update({
-    where: { id },
-    data: { status: "CANCELLED" }
-  });
+  throw new Error("Cannot cancel remote reservations from client via local DB.");
 }
 
-export async function updateReservationStatus(id: string, status: string) {
-    const user = await getUserSession();
-    if (!user || user.role !== "guide" && user.role !== "admin") throw new Error("Unauthorized");
-
-    // In a real app, verify if the guide owns this reservation package
-    return await db.reservation.update({
-        where: { id },
-        data: { status }
-    });
-}

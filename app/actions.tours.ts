@@ -36,15 +36,15 @@ export async function getPremiumPackages() {
   }
 }
 
-// Temporary mocks until these are fully removed or migrated
 export async function getFeaturedCities() {
-  return [];
+  try {
+    const res = await fetch(`https://adminguide.onrender.com/api/admin/cities/featured`, { cache: "no-store" });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json.data || [];
+  } catch (error) {
+    console.error("Error fetching featured cities:", error);
+    return [];
+  }
 }
 
-export async function getPremiumGuides() {
-  return [];
-}
-
-export async function getAllGuides() {
-  return [];
-}
