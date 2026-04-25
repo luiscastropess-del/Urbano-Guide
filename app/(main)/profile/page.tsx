@@ -233,17 +233,6 @@ export default function ProfilePage() {
 
         {/* Opções de conta */}
         <div className="space-y-2 mb-6">
-          {user.role === "admin" && (
-            <div className="pb-2">
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">Administração</h4>
-              <ProfileLink 
-                icon={<Shield className="text-blue-500" size={18} />} 
-                label="Painel Administrativo" 
-                onClick={() => router.push('/admin')} 
-              />
-            </div>
-          )}
-          
           <div className="pb-2">
              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">Turismo</h4>
               <ProfileLink 

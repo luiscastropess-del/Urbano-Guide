@@ -152,10 +152,10 @@ export async function getCity(id: string) {
 
 export async function getFeaturedCities() {
   try {
-    const res = await fetch(`https://adminguide.onrender.com/api/admin/cities/featured`, { cache: "no-store" });
-    if (!res.ok) return [];
-    const json = await res.json();
-    return json.data || [];
+    return await db.city.findMany({
+      where: { featured: true },
+      take: 10
+    });
   } catch (error) {
     console.error("Error fetching featured cities:", error);
     return [];

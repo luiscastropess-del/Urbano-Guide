@@ -30,7 +30,6 @@ export async function createCity(data: {
       galleryImages: data.galleryImages || []
     }
   });
-  revalidatePath("/admin/cities");
   return city;
 }
 
@@ -47,7 +46,6 @@ export async function updateCity(id: string, data: {
     where: { id },
     data
   });
-  revalidatePath("/admin/cities");
   return city;
 }
 
@@ -55,6 +53,5 @@ export async function deleteCity(id: string) {
   const city = await db.city.delete({
     where: { id }
   });
-  revalidatePath("/admin/cities");
   return city;
 }

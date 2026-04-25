@@ -36,7 +36,7 @@ export default function EditProfilePage() {
         setUser(session);
         
         let guideData = null;
-        if (session.role === "guide" || session.role === "admin") {
+        if (session.role === "guide") {
           guideData = await getGuideProfile(session.id);
         }
 
@@ -97,7 +97,7 @@ export default function EditProfilePage() {
     );
   }
 
-  const isGuideOrAdmin = user?.role === "guide" || user?.role === "admin";
+  const isGuide = user?.role === "guide";
 
   return (
     <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900 overflow-hidden">
@@ -183,7 +183,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Dados do Guia (Condicional) */}
-          {isGuideOrAdmin && (
+          {isGuide && (
             <div className="space-y-4 bg-white dark:bg-slate-800/50 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm transition-all">
               <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Perfil de Guia</h2>
               

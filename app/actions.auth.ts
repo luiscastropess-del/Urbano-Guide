@@ -53,7 +53,7 @@ export async function registerUser(data: any) {
         name: data.name,
         email: data.email,
         password: hashedPassword,
-        role: data.email === "luiscastropess@gmail.com" ? "admin" : "user"
+        role: "user"
       }
     });
 
@@ -224,7 +224,7 @@ export async function updateUserProfile(userId: string, data: { name?: string; a
     });
 
     // Update Guide Profile if exists and data provided
-    if (session.role === "guide" || session.role === "admin") {
+    if (session.role === "guide") {
       const guideProfile = await db.guideProfile.findUnique({ where: { userId } });
       if (guideProfile) {
         const guideData: any = {};

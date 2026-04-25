@@ -60,7 +60,6 @@ export async function createPlace(data: {
 }) {
   const result = await db.place.create({ data });
   revalidatePath('/explore');
-  revalidatePath('/admin');
   return result;
 }
 
@@ -90,14 +89,12 @@ export async function updatePlace(id: string, data: Partial<{
 }>) {
   const result = await db.place.update({ where: { id }, data });
   revalidatePath('/explore');
-  revalidatePath('/admin');
   return result;
 }
 
 export async function deletePlace(id: string) {
   const result = await db.place.delete({ where: { id } });
   revalidatePath('/explore');
-  revalidatePath('/admin');
   return result;
 }
 

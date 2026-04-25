@@ -40,11 +40,7 @@ export default function LoginPage() {
         showToast("🔓 Login realizado com sucesso!");
         setTimeout(() => {
           showToast("🌷 Bem-vindo de volta!");
-          if (loginEmail === "luiscastropess@gmail.com") {
-            router.push("/admin");
-          } else {
-            router.push("/profile");
-          }
+          router.push("/profile");
         }, 1000);
       } else {
         showToast(`⚠️ ${res.error}`);

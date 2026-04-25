@@ -4,7 +4,7 @@ Este documento serve como mapa arquitetural e manual de diretrizes para intelig�
 
 ## 1. Visão Geral do Aplicativo
 O sistema é uma plataforma híbrida ("Prospector de Locais" & "Sistema Turístico Múltiplo"). 
-Possui módulos dedicados a prospecção massiva e automatizada de dados geográficos, mas também engloba painéis para guias turísticos e administradores da plataforma.
+Possui módulos dedicados a prospecção massiva e automatizada de dados geográficos e painéis para guias turísticos.
 
 ## 2. Stack Tecnológica (Core)
 *   **Framework Node:** Next.js 15+ (App Router).
@@ -16,10 +16,9 @@ Possui módulos dedicados a prospecção massiva e automatizada de dados geográ
 ## 3. Topologia de Diretórios e Arquivos
 
 *   `/app/api/*`: Endpoints REST clássicos, importantes primariamente para o Cron Job de automação (`/api/cron`, `/api/search` e manipulação de memória viva em `/api/result`).
-*   `/app/actions.*.ts`: "Server Actions" isolados e agrupados por domínio (`actions.cities.ts`, `actions.plugins.ts`, etc.). Onde as queries de banco de dados do Prisma devem residir e as revalidações (`revalidatePath`) operam após mutações de dados para purgar os caches estáticos do Next.js.
-*   `/app/admin/*`: Rotas de Painel de Administradores nativos. Onde o estado geralmente busca configurações globais (Cidades, Chaves de API, listagem geral de Plugins, listagem geral de Guias aprovados e pendentes).
+*   `/app/actions.*.ts`: "Server Actions" isolados e agrupados por domínio (`actions.cities.ts`, etc.). Onde as queries de banco de dados do Prisma devem residir e as revalidações (`revalidatePath`) operam após mutações de dados para purgar os caches estáticos do Next.js.
 *   `/app/dashboard/guia/*`: Área transacional para parceiros gerirem roteiros, pacotes e aceitarem reservas de clientes.
-*   `/components/*`: UI modular reutilizável como `AdminSidebar`, `ToastProvider` para notificações de usuário, grids e modais.
+*   `/components/*`: UI modular reutilizável como o `ToastProvider` para notificações de usuário, grids e modais.
 *   `prisma/schema.prisma`: A fonte da verdade (Source of Truth) na estrutura de Banco. NUNCA faça queries que não respeitam os Models estritos daqui.
 
 ## 4. Funcionalidades Vitais
