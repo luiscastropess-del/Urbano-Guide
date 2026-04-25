@@ -81,6 +81,7 @@ export default function AdminSidebar() {
       icon: MapPin,
       submenus: [
         { title: "Todos os Locais", path: "/admin", icon: List },
+        { title: "Prospecções", path: "/admin/prospects", icon: Database },
         { title: "Adicionar Novo", path: "/admin/add", icon: Plus },
         { title: "Categorias", path: "/admin/categories", icon: Tag },
         { title: "Importar Google", path: "/admin/import", icon: Database }
