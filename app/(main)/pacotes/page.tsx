@@ -3,7 +3,7 @@
 import { useToast } from "@/components/ToastProvider";
 import { Moon, Bell, Search, MapPin, Calendar as CalendarIcon, Star, Shield, ArrowRight, Package, User, Clock, Compass } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { getPublicPackages, getPremiumPackages, getFeaturedCities } from "@/app/actions.tours";
+import { getPublicPackages, getPremiumPackages, getFeaturedCities, getFeaturedGuides } from "@/app/actions.tours";
 import { useRouter } from "next/navigation";
 import { motion, useMotionValue, useAnimationFrame } from "framer-motion";
 
@@ -14,6 +14,7 @@ export default function PacotesPage() {
   const [packages, setPackages] = useState<any[]>([]);
   const [premiumPackages, setPremiumPackages] = useState<any[]>([]);
   const [featuredCities, setFeaturedCities] = useState<any[]>([]);
+  const [featuredGuides, setFeaturedGuides] = useState<any[]>([]);
   
   const [loading, setLoading] = useState(true);
 
@@ -26,11 +27,13 @@ export default function PacotesPage() {
     Promise.all([
       getPublicPackages(),
       getPremiumPackages(),
-      getFeaturedCities()
-    ]).then(([pkgs, premiumPkgs, cities]) => {
+      getFeaturedCities(),
+      getFeaturedGuides()
+    ]).then(([pkgs, premiumPkgs, cities, guides]) => {
       setPackages(pkgs);
       setPremiumPackages(premiumPkgs);
       setFeaturedCities(cities);
+      setFeaturedGuides(guides);
       setLoading(false);
     });
   }, []);
@@ -190,6 +193,79 @@ export default function PacotesPage() {
                     </div>
                   ))}
                </motion.div>
+            </div>
+          </div>
+        )}
+
+        {/* Featured Guides Section */}
+        {featuredGuides.length > 0 && (
+          <div className="px-5 mb-10 overflow-hidden">
+            <div className="flex items-center justify-between mb-4">
+               <div>
+                  <h3 className="font-bold text-xl flex items-center gap-2">
+                    Guias locais em destaque
+                  </h3>
+                  <p className="text-slate-500 text-xs">Os profissionais mais bem avaliados</p>
+               </div>
+               <Shield className="text-orange-500" size={20} />
+            </div>
+
+            <div className="flex gap-4 overflow-x-auto pb-4 hide-scroll">
+              {featuredGuides.map((guide: any) => (
+                <div 
+                  key={guide.id} 
+                  className="flex-shrink-0 w-64 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-3xl p-4 shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="relative h-14 w-14 rounded-2xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200 dark:border-slate-700">
+                      {guide.user?.avatar ? (
+                        <img 
+                          src={guide.user.avatar} 
+                          alt={guide.user.name} 
+                          className="w-full h-full object-cover"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-orange-100 text-orange-600 font-bold text-xl">
+                          {guide.user?.name?.charAt(0)}
+                        </div>
+                      )}
+                      
+                      {guide.plan === 'ultimate' && (
+                        <div className="absolute -top-1 -right-1 bg-amber-500 text-white p-1 rounded-full border-2 border-white dark:border-slate-800">
+                          <Star size={8} className="fill-white" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="overflow-hidden">
+                      <h4 className="font-bold text-sm truncate">{guide.user?.name}</h4>
+                      <div className="flex items-center gap-1 text-amber-500 text-xs font-bold">
+                        <Star size={10} className="fill-amber-500" />
+                        {guide.rating.toFixed(1)}
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-slate-500 line-clamp-2 mb-4 h-8">
+                    {guide.bio || "Guia especialista certificado pronto para transformar sua viagem em uma experiência inesquecível."}
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                     <div className="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-xl border border-slate-100 dark:border-slate-800">
+                        <p className="text-[9px] text-slate-400 uppercase font-bold tracking-wider">Vendidos</p>
+                        <p className="text-sm font-black text-slate-700 dark:text-slate-200">{guide.packagesSold}</p>
+                     </div>
+                     <div className="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-xl border border-slate-100 dark:border-slate-800">
+                        <p className="text-[9px] text-slate-400 uppercase font-bold tracking-wider">KM Rodados</p>
+                        <p className="text-sm font-black text-slate-700 dark:text-slate-200">{guide.totalKm}km</p>
+                     </div>
+                  </div>
+
+                  <button className="w-full py-2.5 bg-slate-100 dark:bg-slate-900 hover:bg-orange-500 hover:text-white transition-colors rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center justify-center gap-2 group">
+                    Ver Perfil <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
         )}

@@ -186,6 +186,10 @@ model GuideProfile {
   status         String        @default("PENDING") // PENDING, APPROVED, REJECTED, BLOCKED
   commissionRate Float         @default(0.15) // 15% default fee
   documents      String[] // URLs to documents
+  plan           String        @default("free") // free, pro, ultimate
+  rating         Float         @default(5.0)
+  packagesSold   Int           @default(0)
+  totalKm        Int           @default(0)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   routes         TourRoute[]

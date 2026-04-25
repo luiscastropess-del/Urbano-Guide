@@ -1,7 +1,33 @@
 "use server";
 
+import { db } from "@/lib/prisma";
+
 function getApiUrl() {
   return process.env.GUIDE_API_URL || "https://pguia.onrender.com";
+}
+
+export async function getFeaturedGuides() {
+  try {
+    return await db.guideProfile.findMany({
+      where: {
+        AND: [
+          { status: "APPROVED" },
+          { plan: { in: ["pro", "ultimate"] } }
+        ]
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            avatar: true
+          }
+        }
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching featured guides:", error);
+    return [];
+  }
 }
 
 export async function getPublicPackage(id: string) {
