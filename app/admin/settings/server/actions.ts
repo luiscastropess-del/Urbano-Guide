@@ -115,8 +115,9 @@ export async function processServerUpdate(formData: FormData) {
     // 5. Integração com GitHub
     if (pushToGithub) {
       addLog("⛓️ Sincronizando com GitHub (pode demorar alguns segundos)...");
-      const token = process.env.GITHUB_ACCESS_TOKEN2;
-      if (!token) throw new Error("GITHUB_ACCESS_TOKEN2 não configurado no servidor.");
+      const { getProviderKey } = await import("@/lib/keys");
+      const token = await getProviderKey("GITHUB_ACCESS_TOKEN2") || await getProviderKey("GITHUB_TOKEN");
+      if (!token) throw new Error("GITHUB_ACCESS_TOKEN2 / GITHUB_TOKEN não configurado no servidor.");
 
       const octokit = new Octokit({ auth: token });
       
