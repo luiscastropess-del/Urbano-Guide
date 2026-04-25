@@ -22,6 +22,7 @@ import { getPublicPackages } from "@/app/actions.tours";
 import { Place } from "@prisma/client";
 
 export default function ExplorePage() {
+  const router = useRouter();
   const { showToast } = useToast();
   const [view, setView] = useState<"map" | "list">("map");
   const [places, setPlaces] = useState<Place[]>([]);

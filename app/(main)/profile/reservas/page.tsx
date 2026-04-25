@@ -91,7 +91,7 @@ export default function ReservasPage() {
               try {
                 const { cancelReservation } = await import("@/app/actions.reservations");
                 await cancelReservation(res.id);
-                showToast("Reserva cancelada.", "success");
+                showToast("Reserva cancelada.");
                 const data = await getCustomerReservations();
                 setReservations(data);
               } catch(e: any) {
