@@ -224,9 +224,10 @@ export default function PacotesPage() {
 
             <div className="flex gap-4 overflow-x-auto pb-4 hide-scroll">
               {featuredGuides.map((guide: any) => (
-                <div 
+                <Link 
+                  href={`/guias/${guide.id}`}
                   key={guide.id} 
-                  className="flex-shrink-0 w-64 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-3xl p-4 shadow-sm hover:shadow-md transition-shadow"
+                  className="flex-shrink-0 w-64 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-3xl p-4 shadow-sm hover:shadow-md transition-shadow block"
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <div className="relative h-14 w-14 rounded-2xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200 dark:border-slate-700">
@@ -274,10 +275,10 @@ export default function PacotesPage() {
                      </div>
                   </div>
 
-                  <button className="w-full py-2.5 bg-slate-100 dark:bg-slate-900 hover:bg-orange-500 hover:text-white transition-colors rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center justify-center gap-2 group">
+                  <div className="w-full py-2.5 bg-slate-100 dark:bg-slate-900 hover:bg-orange-500 hover:text-white transition-colors rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center justify-center gap-2 group">
                     Ver Perfil <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
-                  </button>
-                </div>
+                  </div>
+                </Link>
               ))}
             </div>
           </div>

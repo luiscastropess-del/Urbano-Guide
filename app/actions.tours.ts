@@ -27,10 +27,7 @@ export async function getFeaturedGuides() {
       // Fallback for when the API is not yet available
       return await db.guideProfile.findMany({
         where: {
-          AND: [
-            { status: "APPROVED" },
-            { plan: { in: ["pro", "ultimate"] } }
-          ]
+          status: "APPROVED"
         },
         include: {
           user: {
@@ -89,6 +86,49 @@ export async function getPremiumPackages() {
   } catch (error) {
     console.error("Error fetching premium packages:", error);
     return [];
+  }
+}
+
+export async function getGuide(id: string) {
+  try {
+    const guide = await db.guideProfile.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: {
+            name: true,
+            avatar: true
+          }
+        },
+        packages: {
+          where: { status: "PUBLISHED" }
+        }
+      }
+    });
+
+    // If guide wasn't found by its own ID, maybe the ID passed is the user ID?
+    if (!guide) {
+       const guideByUser = await db.guideProfile.findFirst({
+         where: { userId: id },
+         include: {
+          user: {
+            select: {
+              name: true,
+              avatar: true
+            }
+          },
+          packages: {
+            where: { status: "PUBLISHED" }
+          }
+        }
+       });
+       return guideByUser;
+    }
+
+    return guide;
+  } catch (error) {
+    console.error("Error fetching guide:", error);
+    return null;
   }
 }
 
