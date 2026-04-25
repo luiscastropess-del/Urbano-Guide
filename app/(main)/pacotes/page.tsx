@@ -5,6 +5,7 @@ import { Moon, Bell, Search, MapPin, Calendar as CalendarIcon, Star, Shield, Arr
 import { useState, useEffect, useRef } from "react";
 import { getPublicPackages, getPremiumPackages, getFeaturedCities, getFeaturedGuides } from "@/app/actions.tours";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion, useMotionValue, useAnimationFrame } from "framer-motion";
 import Image from "next/image";
 
@@ -145,9 +146,10 @@ export default function PacotesPage() {
                >
                   {/* Duplicate the list for infinite scroll effect */}
                   {[...featuredCities, ...featuredCities].map((city, index) => (
-                    <div 
+                    <Link
+                      href={`/cidades/${city.id}`} 
                       key={`${city.id || city.name}-${index}`} 
-                      className="flex-shrink-0 w-[240px] h-[320px] relative rounded-[32px] overflow-hidden group cursor-pointer shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-700"
+                      className="flex-shrink-0 w-[240px] h-[320px] relative rounded-[32px] overflow-hidden group cursor-pointer shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-700 block"
                     >
                       <Image 
                         src={city.coverImage || city.profileImage || `https://picsum.photos/seed/${city.name}/600/1000`} 
@@ -200,7 +202,7 @@ export default function PacotesPage() {
                             <span className="text-white font-black text-sm">{(index % featuredCities.length) + 1}</span>
                          </div>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                </motion.div>
             </div>

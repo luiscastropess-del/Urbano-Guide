@@ -92,6 +92,18 @@ export async function getPremiumPackages() {
   }
 }
 
+export async function getCity(id: string) {
+  try {
+    const city = await db.city.findUnique({
+      where: { id }
+    });
+    return city;
+  } catch (error) {
+    console.error("Error fetching city:", error);
+    return null;
+  }
+}
+
 export async function getFeaturedCities() {
   try {
     const res = await fetch(`https://adminguide.onrender.com/api/admin/cities/featured`, { cache: "no-store" });
