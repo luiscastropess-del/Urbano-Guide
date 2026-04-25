@@ -124,7 +124,9 @@ export default function PacotesPage() {
                   <p className="text-slate-500 text-sm font-medium">Explore destinos escolhidos a dedo para você</p>
                </div>
                <Star className="text-amber-500 fill-amber-500 mb-1" size={20} />
-                       <div className="relative overflow-hidden group/carousel" style={{ height: '480px' }}>
+            </div>
+
+            <div className="relative overflow-hidden group/carousel" style={{ height: '480px' }}>
                <motion.div 
                  ref={containerRef}
                  className="flex gap-6 absolute px-5 py-4"
@@ -189,7 +191,6 @@ export default function PacotesPage() {
                   ))}
                </motion.div>
             </div>
-      </div>
           </div>
         )}
 
