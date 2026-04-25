@@ -16,10 +16,10 @@ export function BottomNav() {
   return (
     <nav className="absolute bottom-0 left-0 right-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 px-6 pb-4 pt-2 flex justify-between items-center z-40">
       <NavItem
-        href="/explore"
-        icon={<Compass size={24} />}
-        label="Explorar"
-        active={pathname?.startsWith("/explore")}
+        href="/pacotes"
+        icon={<Package size={24} />}
+        label="Tour"
+        active={pathname?.startsWith("/pacotes")}
       />
       <NavItem
         href="/favorites"
@@ -38,10 +38,10 @@ export function BottomNav() {
       </div>
 
       <NavItem
-        href="/pacotes"
-        icon={<Package size={24} />}
-        label="Tour"
-        active={pathname?.startsWith("/pacotes")}
+        href="/explore"
+        icon={<Compass size={24} />}
+        label="Explorar"
+        active={pathname?.startsWith("/explore")}
       />
       <NavItem
         href="/profile"
