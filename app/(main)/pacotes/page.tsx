@@ -17,6 +17,8 @@ export default function PacotesPage() {
   
   const [loading, setLoading] = useState(true);
 
+  const [isPaused, setIsPaused] = useState(false);
+
   useEffect(() => {
     Promise.all([
       getPublicPackages(),
@@ -87,35 +89,81 @@ export default function PacotesPage() {
         
         {/* Featured Cities Carousel */}
         {featuredCities.length > 0 && (
-          <div className="mb-8 px-5">
-            <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-              Cidades em Destaque <Star className="text-amber-500 fill-amber-500" size={18} />
-            </h3>
-            <div className="relative overflow-hidden rounded-3xl" style={{ height: '300px' }}>
+          <div className="mb-10 mt-2">
+            <div className="px-5 mb-4 flex justify-between items-end">
+               <div>
+                  <h3 className="font-black text-2xl tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                    Cidades em Destaque 
+                    <div className="h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
+                  </h3>
+                  <p className="text-slate-500 text-sm font-medium">Explore destinos escolhidos a dedo para você</p>
+               </div>
+               <Star className="text-amber-500 fill-amber-500 mb-1" size={20} />
+            </div>
+
+            <div className="relative overflow-hidden group/carousel" style={{ height: '420px' }}>
                <motion.div 
-                 className="flex gap-4 absolute"
-                 animate={{ x: ["0%", "-50%"] }}
+                 className="flex gap-5 absolute px-5"
+                 animate={isPaused ? {} : { x: ["0%", "-50%"] }}
                  transition={{ 
                     ease: "linear", 
-                    duration: 30, 
+                    duration: 40, 
                     repeat: Infinity,
                     repeatType: "loop"
                  }}
+                 drag="x"
+                 dragConstraints={{ left: -2000, right: 0 }}
+                 onHoverStart={() => setIsPaused(true)}
+                 onHoverEnd={() => setIsPaused(false)}
+                 onTouchStart={() => setIsPaused(true)}
+                 onTouchEnd={() => setIsPaused(false)}
+                 whileTap={{ cursor: "grabbing" }}
                >
                   {/* Duplicate the list for infinite scroll effect */}
                   {[...featuredCities, ...featuredCities].map((city, index) => (
-                    <div key={`${city.id || city.name}-${index}`} className="flex-shrink-0 w-[260px] h-[300px] relative rounded-3xl overflow-hidden group cursor-pointer shadow-lg shadow-black/10">
+                    <div 
+                      key={`${city.id || city.name}-${index}`} 
+                      className="flex-shrink-0 w-[300px] h-[400px] relative rounded-[32px] overflow-hidden group cursor-pointer shadow-2xl shadow-black/20 hover:shadow-orange-500/10 transition-all duration-500"
+                    >
                       <img 
-                        src={city.coverImage || city.profileImage || `https://picsum.photos/seed/${city.name}/400/600`} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                        src={city.coverImage || city.profileImage || `https://picsum.photos/seed/${city.name}/600/800`} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
                         alt={city.name} 
                         referrerPolicy="no-referrer"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-5">
-                         <h4 className="text-white font-black text-2xl drop-shadow-md mb-1">{city.name}</h4>
-                         <p className="text-white/80 text-xs font-medium line-clamp-2">{city.description || `Descubra os melhores roteiros e experiências exclusivas que ${city.name} tem a oferecer.`}</p>
-                         <div className="mt-4 inline-flex items-center gap-1 text-orange-400 text-xs font-bold uppercase tracking-wider backdrop-blur-md bg-white/10 px-3 py-1.5 rounded-full w-fit">
-                            Explorar <ArrowRight size={12} />
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/40 to-transparent pt-32 pb-8 px-6 flex flex-col justify-end">
+                         <div className="flex items-center gap-2 mb-2">
+                            <span className="bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md">
+                               {city.state || "SP"}
+                            </span>
+                            <div className="h-[1px] flex-1 bg-white/20" />
+                         </div>
+                         <h4 className="text-white font-black text-3xl drop-shadow-2xl mb-2 tracking-tight group-hover:translate-x-1 transition-transform duration-300">
+                           {city.name}
+                         </h4>
+                         <p className="text-white/70 text-xs font-medium line-clamp-2 leading-relaxed mb-4">
+                           {city.description || `Um destino encantador com experiências únicas que você só encontra aqui.`}
+                         </p>
+                         <div className="flex items-center gap-2">
+                            <div className="inline-flex items-center gap-2 text-white text-xs font-bold bg-white/10 backdrop-blur-xl border border-white/20 px-4 py-2 rounded-2xl group-hover:bg-orange-500 group-hover:border-orange-400 transition-all duration-300">
+                               Ver Pacotes <ArrowRight size={14} />
+                            </div>
+                            <div className="flex -space-x-2">
+                               {[1,2,3].map(i => (
+                                 <img key={i} src={`https://i.pravatar.cc/100?img=${i+10}`} className="w-6 h-6 rounded-full border-2 border-black/50" />
+                               ))}
+                               <div className="w-6 h-6 rounded-full border-2 border-black/50 bg-slate-800 flex items-center justify-center text-[8px] text-white font-bold">+12</div>
+                            </div>
+                         </div>
+                      </div>
+                      
+                      {/* Top Badges */}
+                      <div className="absolute top-5 left-5 right-5 flex justify-between items-start opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-1 px-3 border border-white/10 text-white text-[10px] font-bold">
+                            #{index % featuredCities.length + 1}
+                         </div>
+                         <div className="bg-amber-500 rounded-full h-8 w-8 flex items-center justify-center shadow-lg">
+                            <Star className="text-white fill-white" size={14} />
                          </div>
                       </div>
                     </div>
