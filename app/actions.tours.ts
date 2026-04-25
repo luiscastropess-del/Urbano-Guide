@@ -55,6 +55,8 @@ export async function getPublicPackage(id: string) {
     let url = await getRouteUrl("DETALHES_PACOTE_ESPECIFICADO_API", baseFallback);
     if (url.includes("{id}")) {
       url = url.replace("{id}", id);
+    } else if (url.includes("[id]")) {
+      url = url.replace("[id]", id);
     } else {
       url = url.endsWith("/") ? url + id : url + "/" + id;
     }
