@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   X, 
   Menu, 
@@ -40,8 +40,17 @@ interface MenuItem {
 export default function AdminSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
+  const [activePlugins, setActivePlugins] = useState<any[]>([]);
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    fetch("/api/admin/plugins").then(r => r.json()).then(data => {
+      if(data.success) {
+        setActivePlugins(data.plugins);
+      }
+    });
+  }, []);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -124,7 +133,13 @@ export default function AdminSidebar() {
       icon: Box,
       submenus: [
         { title: "Instalados", path: "/admin/plugins", icon: Box },
-        { title: "Marketplace", path: "/admin/plugins/market", icon: Search }
+        { title: "Marketplace", path: "/admin/plugins/market", icon: Search },
+        // Dynamic plugins mapped here
+        ...activePlugins.map(p => ({
+          title: p.name,
+          path: `/admin/plugins/run/${p.slug}`,
+          icon: Box
+        }))
       ]
     },
     { 
