@@ -40,7 +40,7 @@ export function BottomNav() {
       <NavItem
         href="/pacotes"
         icon={<Package size={24} />}
-        label="Pacotes"
+        label="Tour"
         active={pathname?.startsWith("/pacotes")}
       />
       <NavItem
