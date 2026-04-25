@@ -316,6 +316,23 @@ export default function PacotesPage() {
                         <Star size={12} className="fill-amber-500" /> {pkg.rating ? pkg.rating.toFixed(1) : "Novo"}
                      </div>
                   </div>
+
+                  {/* Roteiro Preview */}
+                  {pkg.routes && pkg.routes.length > 0 && (
+                     <div className="mt-3 flex flex-wrap gap-1.5">
+                       {pkg.routes.flatMap((r: any) => r.places).slice(0, 3).map((p: any, pIdx: number) => (
+                         <div key={pIdx} className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 flex items-center gap-1 rounded-md border border-slate-200 dark:border-slate-700">
+                           <span>{p.place?.emoji || '📍'}</span>
+                           <span className="truncate max-w-[80px]">{p.place?.name}</span>
+                         </div>
+                       ))}
+                       {pkg.routes.flatMap((r: any) => r.places).length > 3 && (
+                         <div className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700">
+                           +{pkg.routes.flatMap((r: any) => r.places).length - 3} locais
+                         </div>
+                       )}
+                     </div>
+                  )}
                   
                   <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
                      <span className="text-xs text-slate-500 font-medium">{pkg.routes?.length || 0} Roteiros inclusos</span>
