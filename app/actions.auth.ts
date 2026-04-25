@@ -197,3 +197,77 @@ export async function addXp(userId: string, amount: number) {
   return updatedUser;
 }
 
+export async function updateUserProfile(userId: string, data: { name?: string; avatar?: string; email?: string; bio?: string; languages?: string[]; pixKey?: string }) {
+  try {
+    const session = await getUserSession();
+    if (!session || session.id !== userId) {
+      return { success: false, error: "Não autorizado" };
+    }
+
+    const updateData: any = {};
+    if (data.name) updateData.name = data.name;
+    if (data.avatar) updateData.avatar = data.avatar;
+    if (data.email) {
+      if (data.email !== session.email) {
+        const existing = await db.user.findUnique({ where: { email: data.email } });
+        if (existing) {
+          return { success: false, error: "Este e-mail já está em uso por outro usuário" };
+        }
+        updateData.email = data.email;
+      }
+    }
+
+    // Update User
+    const updatedUser = await db.user.update({
+      where: { id: userId },
+      data: updateData
+    });
+
+    // Update Guide Profile if exists and data provided
+    if (session.role === "guide" || session.role === "admin") {
+      const guideProfile = await db.guideProfile.findUnique({ where: { userId } });
+      if (guideProfile) {
+        const guideData: any = {};
+        if (data.bio !== undefined) guideData.bio = data.bio;
+        if (data.languages !== undefined) guideData.languages = data.languages;
+        if (data.pixKey !== undefined) guideData.pixKey = data.pixKey;
+
+        if (Object.keys(guideData).length > 0) {
+          await db.guideProfile.update({
+            where: { userId },
+            data: guideData
+          });
+        }
+      } else if (session.role === "guide") {
+        // If they are a guide but have no profile for some reason, create it
+         await db.guideProfile.create({
+           data: {
+             userId,
+             bio: data.bio || "",
+             languages: data.languages || ["Português"],
+             pixKey: data.pixKey || ""
+           }
+         });
+      }
+    }
+
+    revalidatePath("/profile");
+    
+    return { success: true, user: updatedUser };
+  } catch (error: any) {
+    console.error("Update Profile Error:", error);
+    return { success: false, error: "Ocorreu um erro ao atualizar o perfil" };
+  }
+}
+
+export async function getGuideProfile(userId: string) {
+  try {
+    return await db.guideProfile.findUnique({
+      where: { userId }
+    });
+  } catch (error) {
+    console.error("Error fetching guide profile:", error);
+    return null;
+  }
+}
+

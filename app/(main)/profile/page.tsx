@@ -131,7 +131,7 @@ export default function ProfilePage() {
               </div>
             </div>
             <button 
-              onClick={() => showToast('📷 Funcionalidade de foto em breve')} 
+              onClick={() => router.push('/profile/edit')} 
               className="absolute bottom-0 right-0 h-9 w-9 rounded-full bg-white dark:bg-slate-700 shadow-md flex items-center justify-center border-2 border-white dark:border-slate-600 transition-transform active:scale-90"
             >
               <Camera className="text-orange-500" size={16} />
@@ -254,7 +254,7 @@ export default function ProfilePage() {
           </div>
 
           <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">Configurações</h4>
-          <ProfileLink icon={<UserPen className="text-orange-500" size={18} />} label="Editar Perfil" onClick={() => showToast('✏️ Editar perfil em breve')} />
+          <ProfileLink icon={<UserPen className="text-orange-500" size={18} />} label="Editar Perfil" onClick={() => router.push('/profile/edit')} />
           <ProfileLink icon={<Bell className="text-orange-500" size={18} />} label="Notificações" onClick={() => showToast('🔔 Notificações')} />
           <ProfileLink icon={<Shield className="text-orange-500" size={18} />} label="Privacidade" onClick={() => showToast('🔒 Privacidade')} />
           <ProfileLink icon={<RotateCcw className="text-orange-500" size={18} />} label="Histórico de Compras" onClick={() => showToast('🧾 Histórico')} />

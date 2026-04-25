@@ -27,7 +27,10 @@ export async function getFeaturedGuides() {
       // Fallback for when the API is not yet available
       return await db.guideProfile.findMany({
         where: {
-          status: "APPROVED"
+          AND: [
+            { status: "APPROVED" },
+            { plan: { in: ["pro", "ultimate"] } }
+          ]
         },
         include: {
           user: {

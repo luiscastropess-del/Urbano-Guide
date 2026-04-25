@@ -17,6 +17,10 @@ export default async function GuideProfilePage({ params }: { params: Promise<{ i
   const bio = guide.bio || guide.description || "Guia especialista certificado, apaixonado por compartilhar experiências únicas e inesquecíveis.";
   const languages = guide.languages || ["Português"];
   
+  // Stable random fallback for reviews if not present in DB
+  const fallbackReviews = Math.floor((guide.user?.id?.length || 0) % 40) + 10;
+  const totalReviews = guide.totalReviews || fallbackReviews;
+  
   // Clean up languages if they have curly braces from Postgres arrays
   const cleanLanguages = languages.map((lang: string) => lang.replace(/^\{|\}$/g, ''));
 
@@ -71,7 +75,7 @@ export default async function GuideProfilePage({ params }: { params: Promise<{ i
                    <div className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-200">
                       <Star className="text-amber-500 fill-amber-500" size={18} />
                       <span className="text-lg">{typeof guide.rating === "number" ? guide.rating.toFixed(1) : (guide.rating || "5.0")}</span>
-                      <span className="text-slate-500">({guide.totalReviews || Math.floor(Math.random() * 50) + 10} avaliações)</span>
+                      <span className="text-slate-500">({totalReviews} avaliações)</span>
                    </div>
                 </div>
 
