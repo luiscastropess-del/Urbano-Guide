@@ -36,8 +36,8 @@ export default async function CityProfilePage({ params }: { params: Promise<{ id
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
-      <div className="relative h-[40vh] md:h-[50vh] w-full">
+    <div className="min-h-screen h-full overflow-y-auto bg-slate-50 dark:bg-slate-950 pb-20">
+      <div className="relative h-[40vh] md:h-[50vh] w-full shrink-0">
         <Image
           src={coverImage}
           alt={`Capa da cidade ${city.name}`}
