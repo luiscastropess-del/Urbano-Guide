@@ -383,8 +383,8 @@ export default function ExplorePage() {
               </span>
             </div>
             <div className="flex gap-4 overflow-x-auto scroll-x hide-scroll pb-2">
-              {packages.map(pkg => (
-                <div key={pkg.id} className="flex-shrink-0 w-72 bg-gradient-to-br from-orange-500 to-amber-500 rounded-3xl p-1 shadow-lg shadow-orange-500/20 cursor-pointer transition-transform hover:scale-[1.02]">
+              {packages.map((pkg: any) => (
+                <div key={pkg.id} onClick={() => router.push(`/pacotes/${pkg.id}`)} className="flex-shrink-0 w-72 bg-gradient-to-br from-orange-500 to-amber-500 rounded-3xl p-1 shadow-lg shadow-orange-500/20 cursor-pointer transition-transform hover:scale-[1.02]">
                    <div className="bg-white dark:bg-slate-900 rounded-[22px] h-full overflow-hidden flex flex-col">
                       <div className="h-32 bg-slate-100 flex items-center justify-center relative">
                         {pkg.images?.[0] ? (

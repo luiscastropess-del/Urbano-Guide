@@ -81,46 +81,79 @@ export default function ReservasPage() {
             <button onClick={() => router.push("/pacotes")} className="bg-orange-500 text-white px-4 py-2 rounded-xl font-bold">Ver Pacotes</button>
           </div>
         ) : (
-          reservations.map((res) => (
-            <div key={res.id} className="bg-white dark:bg-slate-800 p-4 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group">
-              <div className="flex justify-between items-start mb-3">
-                <div className="pr-4">
-                  <h3 className="font-bold text-slate-800 dark:text-slate-100 line-clamp-1">{res.package?.title}</h3>
-                  <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
-                    <MapPin size={12} className="text-orange-500" /> Holambra, SP
+          reservations.map((res) => {
+            const isPending = res.status === "PENDING";
+            const isConfirmed = res.status === "CONFIRMED";
+            const isCompleted = res.status === "COMPLETED";
+
+            const handleCancel = async () => {
+              if(!confirm("Deseja cancelar esta reserva?")) return;
+              try {
+                const { cancelReservation } = await import("@/app/actions.reservations");
+                await cancelReservation(res.id);
+                showToast("Reserva cancelada.", "success");
+                const data = await getCustomerReservations();
+                setReservations(data);
+              } catch(e: any) {
+                showToast(e.message || "Erro ao cancelar.");
+              }
+            };
+
+            return (
+              <div key={res.id} className="bg-white dark:bg-slate-800 p-4 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="pr-4">
+                    <h3 className="font-bold text-slate-800 dark:text-slate-100 line-clamp-1">{res.package?.title}</h3>
+                    <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
+                      <MapPin size={12} className="text-orange-500" /> Holambra, SP
+                    </div>
+                  </div>
+                  <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold ${getStatusColor(res.status)} shrink-0`}>
+                     {getStatusIcon(res.status)}
+                     {getStatusLabel(res.status)}
                   </div>
                 </div>
-                <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold ${getStatusColor(res.status)} shrink-0`}>
-                   {getStatusIcon(res.status)}
-                   {getStatusLabel(res.status)}
+
+                <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-900 rounded-xl p-3 mb-3">
+                   <div>
+                      <span className="block text-slate-400 mb-0.5">Data</span>
+                      <span className="font-medium flex items-center gap-1"><Calendar size={12} className="text-orange-500"/> {new Date(res.date).toLocaleDateString()}</span>
+                   </div>
+                   <div>
+                      <span className="block text-slate-400 mb-0.5">Participantes</span>
+                      <span className="font-medium">{res.guests} pessoa(s)</span>
+                   </div>
+                   <div className="col-span-2 pt-1 mt-1 border-t border-slate-200 dark:border-slate-800">
+                      <span className="block text-slate-400 mb-0.5">Guia Responsável</span>
+                      <span className="font-medium">{res.package?.guide?.user?.name || "N/A"}</span>
+                   </div>
+                </div>
+
+                <div className="flex flex-col gap-3">
+                   <div className="flex justify-between items-center">
+                     <div className="text-lg font-black text-slate-800 dark:text-white">
+                        R$ {res.totalPrice.toFixed(2)}
+                     </div>
+                     <button onClick={() => router.push(`/pacotes/${res.packageId}`)} className="text-xs font-bold text-orange-500 bg-orange-50 dark:bg-orange-950/30 px-3 py-1.5 rounded-lg active:scale-95 transition-transform">
+                       Ver Pacote
+                     </button>
+                   </div>
+                   <div className="flex gap-2 border-t border-slate-100 dark:border-slate-700 pt-3">
+                      {isCompleted && (
+                        <button onClick={() => showToast("Avaliação em breve")} className="flex-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-xl text-xs font-bold py-2 shadow-sm">
+                          Avaliar Experiência
+                        </button>
+                      )}
+                      {(isPending || isConfirmed) && (
+                        <button onClick={handleCancel} className="flex-1 bg-rose-50 text-rose-500 dark:bg-rose-900/10 dark:text-rose-400 rounded-xl text-xs font-bold py-2">
+                          Cancelar Reserva
+                        </button>
+                      )}
+                   </div>
                 </div>
               </div>
-
-              <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-900 rounded-xl p-3 mb-3">
-                 <div>
-                    <span className="block text-slate-400 mb-0.5">Data</span>
-                    <span className="font-medium flex items-center gap-1"><Calendar size={12} className="text-orange-500"/> {new Date(res.date).toLocaleDateString()}</span>
-                 </div>
-                 <div>
-                    <span className="block text-slate-400 mb-0.5">Participantes</span>
-                    <span className="font-medium">{res.guests} pessoa(s)</span>
-                 </div>
-                 <div className="col-span-2 pt-1 mt-1 border-t border-slate-200 dark:border-slate-800">
-                    <span className="block text-slate-400 mb-0.5">Guia Responsável</span>
-                    <span className="font-medium">{res.package?.guide?.user?.name || "N/A"}</span>
-                 </div>
-              </div>
-
-              <div className="flex justify-between items-center">
-                 <div className="text-lg font-black text-slate-800 dark:text-white">
-                    R$ {res.totalPrice.toFixed(2)}
-                 </div>
-                 <button onClick={() => router.push(`/pacotes/${res.packageId}`)} className="text-xs font-bold text-orange-500 bg-orange-50 dark:bg-orange-950/30 px-3 py-1.5 rounded-lg active:scale-95 transition-transform">
-                   Ver Pacote
-                 </button>
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>
