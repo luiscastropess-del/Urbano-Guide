@@ -17,7 +17,7 @@ export default function InstalledPlugins() {
       const data = await getPlugins();
       setPlugins(data);
     } catch (e: any) {
-      showToast("Erro ao carregar plugins", "error");
+      showToast("Erro ao carregar plugins");
     } finally {
       setLoading(false);
     }
@@ -30,10 +30,10 @@ export default function InstalledPlugins() {
   const handleToggle = async (id: string, current: boolean) => {
     try {
       await togglePluginStatus(id, !current);
-      showToast(current ? "Plugin desativado" : "Plugin ativado", "success");
+      showToast(current ? "Plugin desativado" : "Plugin ativado");
       load();
     } catch (e) {
-      showToast("Erro ao alternar status", "error");
+      showToast("Erro ao alternar status");
     }
   };
 
@@ -41,10 +41,10 @@ export default function InstalledPlugins() {
     if (!confirm("Tem certeza que deseja desinstalar este plugin?")) return;
     try {
       await deletePlugin(id);
-      showToast("Plugin desinstalado", "success");
+      showToast("Plugin desinstalado");
       load();
     } catch (e) {
-      showToast("Erro ao deletar plugin", "error");
+      showToast("Erro ao deletar plugin");
     }
   };
 

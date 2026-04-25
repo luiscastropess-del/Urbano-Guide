@@ -50,10 +50,10 @@ export default function MarketplacePage() {
         manifest: plugin.manifest,
         codeHtml: plugin.codeHtml
       });
-      showToast(`${plugin.name} instalado com sucesso!`, "success");
+      showToast(`${plugin.name} instalado com sucesso!`);
       setInstalledCount(c => c + 1);
     } catch (e) {
-      showToast("Erro ao instalar plugin", "error");
+      showToast("Erro ao instalar plugin");
     } finally {
       setInstallingId(null);
     }
@@ -77,11 +77,11 @@ export default function MarketplacePage() {
            manifest: data.manifest || "{}",
            codeHtml: data.codeHtml || "<h2>Plugin Customizado</h2>"
          }).then(() => {
-            showToast("Plugin customizado instalado!", "success");
-         }).catch(() => showToast("Erro ao salvar plugin no banco", "error"));
+            showToast("Plugin customizado instalado!");
+         }).catch(() => showToast("Erro ao salvar plugin no banco"));
 
        } catch(e) {
-         showToast("Formato inválido. Insira um JSON válido do plugin.", "error");
+         showToast("Formato inválido. Insira um JSON válido do plugin.");
        }
     }
   };
