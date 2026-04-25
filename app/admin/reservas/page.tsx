@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getAllReservations, getReservationStats } from "@/app/actions.admin.reservations";
 import { useToast } from "@/components/ToastProvider";
 import { Calendar, DollarSign, Search, CheckCircle, Clock, XCircle, ChevronRight, Activity } from "lucide-react";
@@ -11,11 +11,7 @@ export default function AdminReservationsPage() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [resData, statsData] = await Promise.all([
         getAllReservations(),
@@ -28,7 +24,14 @@ export default function AdminReservationsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchData();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchData]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {

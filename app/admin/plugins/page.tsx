@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useToast } from "@/components/ToastProvider";
 import { Loader2, Box, Trash2, Power, Globe, PlusCircle, Link as LinkIcon, RefreshCw, Layers } from "lucide-react";
 import Link from "next/link";
@@ -11,7 +11,7 @@ export default function InstalledPlugins() {
   const [plugins, setPlugins] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
       const data = await getPlugins();
@@ -21,11 +21,14 @@ export default function InstalledPlugins() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
 
   useEffect(() => {
-    load();
-  }, []);
+    const timer = setTimeout(() => {
+      load();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [load]);
 
   const handleToggle = async (id: string, current: boolean) => {
     try {

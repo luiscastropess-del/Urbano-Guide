@@ -20,10 +20,11 @@ import {
   Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getPlaces, createPlace, updatePlace, deletePlace } from "@/app/actions";
 import { getUserSession } from "@/app/actions.auth";
 import { Place } from "@prisma/client";
+import Image from "next/image";
 
 export default function AdminDashboardPage() {
   const { showToast } = useToast();
@@ -33,19 +34,21 @@ export default function AdminDashboardPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
 
-  const fetchPlaces = async () => {
+  const fetchPlaces = useCallback(async () => {
     try {
       const data = await getPlaces();
       setPlaces(data);
     } catch (e) {
       console.error(e);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchPlaces();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const timer = setTimeout(() => {
+      fetchPlaces();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchPlaces]);
 
   const toggleDarkMode = () => {
     document.documentElement.classList.toggle("dark");
@@ -245,9 +248,9 @@ export default function AdminDashboardPage() {
                         <tr key={place.id} onClick={() => router.push(`/admin/places/${place.id}`)} className="border-b cursor-pointer border-slate-100 dark:border-slate-800/50 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/50">
                           <td className="py-3 px-3 text-sm font-medium flex items-center gap-2">
                             {place.coverImage ? (
-                              <div className="h-6 w-6 rounded shrink-0 overflow-hidden bg-slate-100 dark:bg-slate-800">
-                                <img src={place.coverImage} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                              </div>
+                               <div className="h-6 w-6 rounded shrink-0 overflow-hidden bg-slate-100 dark:bg-slate-800 relative">
+                                 <Image src={place.coverImage} fill alt={place.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                               </div>
                             ) : (
                               <span>{place.emoji}</span>
                             )}

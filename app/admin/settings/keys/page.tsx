@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getApiKeys, upsertApiKey, deleteApiKey, toggleApiKeyStatus } from "@/app/actions.keys";
 import { Plus, KeyRound, Save, Trash2, Edit2, Shield, X, Check, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
@@ -32,11 +32,7 @@ export default function ApiKeysSettingsPage() {
   // Visibility State
   const [visibleKeys, setVisibleKeys] = useState<{ [key: string]: boolean }>({});
 
-  useEffect(() => {
-    loadKeys();
-  }, []);
-
-  const loadKeys = async () => {
+  const loadKeys = useCallback(async () => {
     try {
       const data = await getApiKeys();
       setKeys(data);
@@ -45,7 +41,14 @@ export default function ApiKeysSettingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      loadKeys();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [loadKeys]);
 
   const handleOpenModal = (keyToEdit?: any) => {
     if (keyToEdit) {

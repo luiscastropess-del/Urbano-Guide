@@ -66,7 +66,7 @@ model Review {
   id                  String  @id @default(uuid())
   authorName          String
   authorPhotoUrl      String?
-  rating              Float
+  rating              Float?
   text                String
   relativePublishTime String?
   placeId             String
@@ -187,7 +187,7 @@ model GuideProfile {
   commissionRate Float         @default(0.15) // 15% default fee
   documents      String[] // URLs to documents
   plan           String        @default("free") // free, pro, ultimate
-  rating         Float         @default(5.0)
+  rating         Float?        @default(5.0)
   packagesSold   Int           @default(0)
   totalKm        Int           @default(0)
   createdAt      DateTime      @default(now())
@@ -268,7 +268,7 @@ model TourReview {
   package       TourPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
   customerId    String
   customer      User        @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  rating        Float
+  rating        Float?
   comment       String?     @db.Text
   createdAt     DateTime    @default(now())
 }

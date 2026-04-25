@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useToast } from "@/components/ToastProvider";
 import { Loader2, Search, Trash2, MapPin, Sparkles, Filter, MoreVertical, Edit2, CheckSquare, Square, PieChart, Tag } from "lucide-react";
+import Image from "next/image";
 
 export default function ProspectsPage() {
   const { showToast } = useToast();
@@ -18,7 +19,7 @@ export default function ProspectsPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processMessage, setProcessMessage] = useState("");
 
-  const loadPlaces = async () => {
+  const loadPlaces = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/admin/prospects");
@@ -31,11 +32,14 @@ export default function ProspectsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
 
   useEffect(() => {
-    loadPlaces();
-  }, []);
+    const timer = setTimeout(() => {
+      loadPlaces();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [loadPlaces]);
 
   const cities = useMemo(() => {
     const list = new Set(places.map(p => p.city).filter(Boolean));
@@ -236,9 +240,9 @@ export default function ProspectsPage() {
                          </td>
                          <td className="p-4">
                            <div className="flex items-center gap-3">
-                             <div className="h-10 w-10 bg-slate-100 dark:bg-slate-700 rounded-lg overflow-hidden shrink-0">
+                             <div className="h-10 w-10 bg-slate-100 dark:bg-slate-700 rounded-lg overflow-hidden shrink-0 relative">
                                {place.coverImage ? (
-                                 <img src={place.coverImage} className="w-full h-full object-cover" alt={place.name} />
+                                 <Image src={place.coverImage} fill className="object-cover" alt={place.name} />
                                ) : (
                                  <div className="w-full h-full flex items-center justify-center text-slate-400 text-lg">{place.emoji || "📍"}</div>
                                )}

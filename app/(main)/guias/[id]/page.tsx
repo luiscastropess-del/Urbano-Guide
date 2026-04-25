@@ -12,14 +12,14 @@ export default async function GuideProfilePage({ params }: { params: Promise<{ i
     notFound();
   }
 
-  const profileImage = guide.profileImage || guide.user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(guide.user?.name || guide.name || 'Guia')}&size=200&background=F97316&color=fff`;
-  const name = guide.user?.name || guide.name || "Guia Local";
-  const bio = guide.bio || guide.description || "Guia especialista certificado, apaixonado por compartilhar experiências únicas e inesquecíveis.";
-  const languages = guide.languages || ["Português"];
+  const profileImage = guide.user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(guide.user?.name || 'Guia')}&size=200&background=F97316&color=fff`;
+  const name = guide.user?.name || "Guia Local";
+  const bio = guide.bio || "Guia especialista certificado, apaixonado por compartilhar experiências únicas e inesquecíveis.";
+  const languages = (guide.languages as string[]) || ["Português"];
   
   // Stable random fallback for reviews if not present in DB
   const fallbackReviews = Math.floor((guide.user?.id?.length || 0) % 40) + 10;
-  const totalReviews = guide.totalReviews || fallbackReviews;
+  const totalReviews = fallbackReviews;
   
   // Clean up languages if they have curly braces from Postgres arrays
   const cleanLanguages = languages.map((lang: string) => lang.replace(/^\{|\}$/g, ''));
@@ -62,7 +62,7 @@ export default async function GuideProfilePage({ params }: { params: Promise<{ i
                        <ShieldCheck size={12} /> Verificado
                      </span>
                    )}
-                   {guide.featured && (
+                   {(guide.plan === 'pro' || guide.plan === 'ultimate') && (
                      <span className="inline-flex items-center gap-1 text-[10px] uppercase font-black tracking-widest text-orange-600 bg-orange-100 px-2 py-0.5 rounded-md">
                        <Star size={12} className="fill-orange-600" /> Destaque
                      </span>

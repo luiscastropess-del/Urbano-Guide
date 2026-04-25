@@ -342,7 +342,7 @@ export default function PlacePublicPage() {
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-bold text-sm truncate pr-2">{rev.authorName}</span>
                         <div className="flex text-amber-400 shrink-0">
-                          {Array.from({length: 5}).map((_, j) => <Star key={j} size={10} className={j < Math.round(rev.rating) ? "fill-amber-400" : "opacity-30"} />)}
+                          {Array.from({length: 5}).map((_, j) => <Star key={j} size={10} className={j < Math.round(rev.rating || 0) ? "fill-amber-400" : "opacity-30"} />)}
                         </div>
                       </div>
                       <p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 leading-relaxed">&quot;{rev.text}&quot;</p>

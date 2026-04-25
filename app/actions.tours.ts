@@ -35,6 +35,7 @@ export async function getFeaturedGuides() {
         include: {
           user: {
             select: {
+              id: true,
               name: true,
               avatar: true
             }
@@ -99,6 +100,7 @@ export async function getGuide(id: string) {
       include: {
         user: {
           select: {
+            id: true,
             name: true,
             avatar: true
           }
@@ -116,6 +118,7 @@ export async function getGuide(id: string) {
          include: {
           user: {
             select: {
+              id: true,
               name: true,
               avatar: true
             }

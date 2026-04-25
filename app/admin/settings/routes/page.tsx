@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getApiRoutes, upsertApiRoute, deleteApiRoute, toggleApiRouteStatus } from "@/app/actions.routes";
 import { Plus, Link as LinkIcon, Save, Trash2, Edit2, Shield, X, Check, Globe } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
@@ -26,11 +26,7 @@ export default function ApiRoutesSettingsPage() {
   const [isActive, setIsActive] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    loadRoutes();
-  }, []);
-
-  const loadRoutes = async () => {
+  const loadRoutes = useCallback(async () => {
     try {
       const data = await getApiRoutes();
       setRoutes(data);
@@ -39,7 +35,14 @@ export default function ApiRoutesSettingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      loadRoutes();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [loadRoutes]);
 
   const handleOpenModal = (routeToEdit?: any) => {
     if (routeToEdit) {

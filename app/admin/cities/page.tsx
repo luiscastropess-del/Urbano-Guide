@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { 
   Building2, Plus, Search, Edit2, Trash2, MapPin, 
   Image as ImageIcon, MoreVertical, X, Check, Camera
 } from "lucide-react";
+import Image from "next/image";
 import { getCities, createCity, updateCity, deleteCity } from "@/app/actions.cities";
 import { useToast } from "@/components/ToastProvider";
 
@@ -30,7 +31,7 @@ export default function AdminCitiesPage() {
   const [newGalleryUrl, setNewGalleryUrl] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
-  const loadCities = async (showLoading = false) => {
+  const loadCities = useCallback(async (showLoading = false) => {
     try {
       if (showLoading) setLoading(true);
       const data = await getCities();
@@ -40,12 +41,14 @@ export default function AdminCitiesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
 
   useEffect(() => {
-    loadCities(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const timer = setTimeout(() => {
+      loadCities(false);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [loadCities]);
 
   const handleOpenModal = (city?: any) => {
     if (city) {
@@ -194,7 +197,7 @@ export default function AdminCitiesPage() {
                  {/* Cover */}
                  <div className="h-32 bg-slate-200 dark:bg-slate-700 relative">
                     {city.coverImage ? (
-                      <img src={city.coverImage} alt="Cover" className="w-full h-full object-cover" />
+                      <Image src={city.coverImage} fill alt={`${city.name} cover`} className="object-cover" referrerPolicy="no-referrer" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-slate-400">
                         <ImageIcon size={32} className="opacity-50" />
@@ -202,9 +205,9 @@ export default function AdminCitiesPage() {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                     <div className="absolute bottom-3 left-4 flex items-center gap-3">
-                       <div className="h-12 w-12 rounded-full border-2 border-white bg-slate-100 overflow-hidden shrink-0 shadow-lg">
+                       <div className="h-12 w-12 rounded-full border-2 border-white bg-slate-100 overflow-hidden shrink-0 shadow-lg relative">
                          {city.profileImage ? (
-                           <img src={city.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                           <Image src={city.profileImage} fill alt={city.name} className="object-cover" referrerPolicy="no-referrer" />
                          ) : (
                            <Building2 className="w-full h-full p-2 text-slate-400" />
                          )}
