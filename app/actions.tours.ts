@@ -60,7 +60,7 @@ export async function getFeaturedGuides() {
     if (!res.ok) {
       // Fallback for when the API is not yet available
       try {
-        return await db.guideProfile.findMany({
+        const guides = await db.guideProfile.findMany({
           where: {
             AND: [
               { status: "APPROVED" },
@@ -76,6 +76,14 @@ export async function getFeaturedGuides() {
               }
             }
           }
+        });
+
+        const planOrder: Record<string, number> = { 'ultimate': 3, 'pro': 2, 'free': 1 };
+        
+        return guides.sort((a, b) => {
+          const planA = planOrder[a.plan] || 0;
+          const planB = planOrder[b.plan] || 0;
+          return planB - planA;
         });
       } catch (dbError) {
         console.error("Database fallback error in getFeaturedGuides:", dbError);
@@ -168,15 +176,25 @@ export async function getPublicPackages() {
     const data = await res.json();
     console.log("External API response:", JSON.stringify(data).substring(0, 200));
 
-    // Handle standard API responses that wrap lists in objects
+    let packages: any[] = [];
     if (data && !Array.isArray(data)) {
-      if (Array.isArray(data.packages)) return data.packages;
-      if (Array.isArray(data.data)) return data.data;
-      if (Array.isArray(data.items)) return data.items;
-      return []; // Failed to extract array
+        if (Array.isArray(data.packages)) packages = data.packages;
+        else if (Array.isArray(data.data)) packages = data.data;
+        else if (Array.isArray(data.items)) packages = data.items;
+        else packages = [];
+    } else {
+        packages = Array.isArray(data) ? data : [];
     }
 
-    return Array.isArray(data) ? data : [];
+    const planOrder: Record<string, number> = { 'ultimate': 3, 'pro': 2, 'free': 1 };
+
+    packages.sort((a, b) => {
+        const planA = planOrder[a.guide?.plan || 'free'] || 0;
+        const planB = planOrder[b.guide?.plan || 'free'] || 0;
+        return planB - planA;
+    });
+
+    return packages;
   } catch (error) {
     console.error("Error fetching packages:", error);
     try {
