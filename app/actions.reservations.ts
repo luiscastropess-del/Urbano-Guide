@@ -64,6 +64,46 @@ export async function getCustomerReservations() {
   } catch(e) {
      console.error("Network error fetching reservations:", e);
   }
+
+  try {
+    const localReservations = await db.reservation.findMany({
+      where: { customerId: user.id },
+      include: {
+        package: {
+          include: {
+            guide: {
+              include: { user: true }
+            }
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    
+    return localReservations.map(r => ({
+      id: r.id,
+      packageId: r.packageId,
+      date: r.date.toISOString(),
+      status: r.status,
+      totalPrice: r.totalPrice,
+      guests: r.guests,
+      package: r.package ? {
+        id: r.package.id,
+        title: r.package.title,
+        coverImage: r.package.images && r.package.images.length > 0 ? r.package.images[0] : null,
+        city: "Holambra",
+        duration: r.package.durationDays,
+        guide: r.package.guide ? {
+          id: r.package.guide.id,
+          name: r.package.guide.user.name,
+          avatar: r.package.guide.user.avatar,
+        } : null
+      } : null
+    }));
+  } catch (dbErr) {
+    console.error("Local DB fetch failed:", dbErr);
+  }
+
   return [];
 }
 
@@ -72,6 +112,18 @@ export async function cancelReservation(id: string) {
   const user = await getUserSession();
   if (!user) throw new Error("Unauthorized");
 
+  // Local fallback
+  try {
+    const localRes = await db.reservation.findUnique({ where: { id } });
+    if (localRes && localRes.customerId === user.id) {
+      await db.reservation.update({
+        where: { id },
+        data: { status: "CANCELLED" }
+      });
+      return { success: true };
+    }
+  } catch (err) {}
+  
   throw new Error("Cannot cancel remote reservations from client via local DB.");
 }
 

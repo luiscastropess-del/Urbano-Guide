@@ -105,7 +105,12 @@ export async function getPublicPackage(id: string) {
         }
       });
     }
-    return await res.json();
+    const data = await res.json();
+    if (data && typeof data === 'object') {
+      if (data.package) return data.package;
+      if (data.data && typeof data.data === 'object' && !Array.isArray(data.data)) return data.data;
+    }
+    return data;
   } catch (error) {
     console.error("Error fetching package:", error);
     try {
@@ -129,29 +134,46 @@ export async function getPublicPackages() {
     const url = await getRouteUrl("PACOTES_GERAIS_API", baseFallback);
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) {
-      return await db.tourPackage.findMany({
-        where: {
-          status: "PUBLISHED"
-        },
-        include: {
-          guide: {
-            include: { user: { select: { id: true, name: true, avatar: true } } }
+      console.log("External API failed, returning db records");
+      try {
+        const pkgs = await db.tourPackage.findMany({
+          include: {
+            guide: {
+              include: { user: { select: { id: true, name: true, avatar: true } } }
+            }
           }
-        }
-      });
+        });
+        console.log("DB returned:", pkgs.length, "packages.");
+        return pkgs;
+      } catch (err) {
+        console.error("Fallback DB query failed:", err);
+        return [];
+      }
     }
-    return await res.json();
+    const data = await res.json();
+    console.log("External API response:", JSON.stringify(data).substring(0, 200));
+
+    // Handle standard API responses that wrap lists in objects
+    if (data && !Array.isArray(data)) {
+      if (Array.isArray(data.packages)) return data.packages;
+      if (Array.isArray(data.data)) return data.data;
+      if (Array.isArray(data.items)) return data.items;
+      return []; // Failed to extract array
+    }
+
+    return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("Error fetching packages:", error);
     try {
-      return await db.tourPackage.findMany({
-        where: { status: "PUBLISHED" },
+      const pkgs = await db.tourPackage.findMany({
         include: {
           guide: {
             include: { user: { select: { id: true, name: true, avatar: true } } }
           }
         }
       });
+      console.log("DB returned in catch:", pkgs.length, "packages.");
+      return pkgs;
     } catch {
       return [];
     }
