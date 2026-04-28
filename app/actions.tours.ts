@@ -53,23 +53,28 @@ export async function getFeaturedGuides() {
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) {
       // Fallback for when the API is not yet available
-      return await db.guideProfile.findMany({
-        where: {
-          AND: [
-            { status: "APPROVED" },
-            { plan: { in: ["pro", "ultimate"] } }
-          ]
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              avatar: true
+      try {
+        return await db.guideProfile.findMany({
+          where: {
+            AND: [
+              { status: "APPROVED" },
+              { plan: { in: ["pro", "ultimate"] } }
+            ]
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                avatar: true
+              }
             }
           }
-        }
-      });
+        });
+      } catch (dbError) {
+        console.error("Database fallback error in getFeaturedGuides:", dbError);
+        return [];
+      }
     }
     return await res.json();
   } catch (error) {
