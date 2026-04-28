@@ -54,51 +54,46 @@ export async function getGuides() {
 }
 
 export async function getFeaturedGuides() {
+  let localGuides: any[] = [];
+  try {
+    localGuides = await db.guideProfile.findMany({
+      where: {
+        AND: [
+          { status: "APPROVED" },
+          { plan: { in: ["pro", "ultimate"] } }
+        ]
+      },
+      include: {
+        user: {
+          select: { id: true, name: true, avatar: true }
+        }
+      }
+    });
+  } catch (err) {
+    console.error("Local guides fallback error:", err);
+  }
+
   try {
     const baseFallback = `${getApiUrl()}/api/public/guides/featured`;
     const url = await getRouteUrl("GUIDES_API", baseFallback);
     const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) {
-      // Fallback for when the API is not yet available
-      try {
-        const guides = await db.guideProfile.findMany({
-          where: {
-            AND: [
-              { status: "APPROVED" },
-              { plan: { in: ["pro", "ultimate"] } }
-            ]
-          },
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                avatar: true
-              }
-            }
-          }
-        });
-
-        const planOrder: Record<string, number> = { 'ultimate': 3, 'pro': 2, 'free': 1 };
-        
-        return guides.sort((a, b) => {
-          const planA = planOrder[a.plan] || 0;
-          const planB = planOrder[b.plan] || 0;
-          return planB - planA;
-        });
-      } catch (dbError) {
-        console.error("Database fallback error in getFeaturedGuides details:", {
-          message: dbError instanceof Error ? dbError.message : String(dbError),
-          code: (dbError as any).code,
-          meta: (dbError as any).meta
-        });
-        return [];
-      }
+    
+    let externalGuides: any[] = [];
+    if (res.ok) {
+      externalGuides = await res.json();
     }
-    return await res.json();
+    
+    const merged = [...localGuides, ...externalGuides];
+    const planOrder: Record<string, number> = { 'ultimate': 3, 'pro': 2, 'free': 1 };
+    
+    return merged.sort((a, b) => {
+      const planA = planOrder[a.plan || 'free'] || 0;
+      const planB = planOrder[b.plan || 'free'] || 0;
+      return planB - planA;
+    });
   } catch (error) {
     console.error("Error fetching featured guides:", error);
-    return [];
+    return localGuides;
   }
 }
 
@@ -148,64 +143,53 @@ export async function getPublicPackage(id: string) {
 }
 
 export async function getPublicPackages() {
+  let localPackages: any[] = [];
+  try {
+    localPackages = await db.tourPackage.findMany({
+      where: { status: "PUBLISHED" },
+      include: {
+        guide: {
+          include: { user: { select: { id: true, name: true, avatar: true } } }
+        },
+        routes: {
+          include: {
+            places: {
+              include: { place: true }
+            }
+          }
+        }
+      }
+    });
+  } catch (err) {
+    console.error("Local DB query failed:", err);
+  }
+
   try {
     const baseFallback = `${getApiUrl()}/api/public/packages?limit=50`;
     const url = await getRouteUrl("PACOTES_GERAIS_API", baseFallback);
     const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) {
-      console.log("External API failed, returning db records");
-      try {
-        const pkgs = await db.tourPackage.findMany({
-          include: {
-            guide: {
-              include: { user: { select: { id: true, name: true, avatar: true } } }
-            }
-          }
-        });
-        
-        const planOrder: Record<string, number> = { 'ultimate': 3, 'pro': 2, 'free': 1 };
-        
-        pkgs.sort((a, b) => {
-           // 1. Boosted Priority
-           const aBoosted = (a as any).isBoosted || false;
-           const bBoosted = (b as any).isBoosted || false;
-           if (aBoosted && !bBoosted) return -1;
-           if (!aBoosted && bBoosted) return 1;
-
-           // 2. Plan Priority
-           const planA = planOrder[a.guide?.plan || 'free'] || 0;
-           const planB = planOrder[b.guide?.plan || 'free'] || 0;
-           if (planA !== planB) return planB - planA;
-           
-           return 0;
-        });
-        
-        console.log("DB returned:", pkgs.length, "packages.");
-        return pkgs;
-      } catch (err) {
-        console.error("Fallback DB query failed:", err);
-        return [];
+    
+    let externalPackages: any[] = [];
+    if (res.ok) {
+      const data = await res.json();
+      if (data && !Array.isArray(data)) {
+          if (Array.isArray(data.packages)) externalPackages = data.packages;
+          else if (Array.isArray(data.data)) externalPackages = data.data;
+          else if (Array.isArray(data.items)) externalPackages = data.items;
+      } else {
+          externalPackages = Array.isArray(data) ? data : [];
       }
     }
-    const data = await res.json();
-    console.log("External API response:", JSON.stringify(data).substring(0, 200));
 
-    let packages: any[] = [];
-    if (data && !Array.isArray(data)) {
-        if (Array.isArray(data.packages)) packages = data.packages;
-        else if (Array.isArray(data.data)) packages = data.data;
-        else if (Array.isArray(data.items)) packages = data.items;
-        else packages = [];
-    } else {
-        packages = Array.isArray(data) ? data : [];
-    }
-
+    const merged = [...localPackages, ...externalPackages];
     const planOrder: Record<string, number> = { 'ultimate': 3, 'pro': 2, 'free': 1 };
 
-    packages.sort((a, b) => {
+    merged.sort((a, b) => {
         // 1. Boosted Priority
-        if (a.isBoosted && !b.isBoosted) return -1;
-        if (!a.isBoosted && b.isBoosted) return 1;
+        const aBoosted = (a as any).isBoosted || false;
+        const bBoosted = (b as any).isBoosted || false;
+        if (aBoosted && !bBoosted) return -1;
+        if (!aBoosted && bBoosted) return 1;
 
         // 2. Plan Priority
         const planA = planOrder[a.guide?.plan || 'free'] || 0;
@@ -215,36 +199,10 @@ export async function getPublicPackages() {
         return 0;
     });
 
-    return packages;
+    return merged;
   } catch (error) {
     console.error("Error fetching packages:", error);
-    try {
-      const pkgs = await db.tourPackage.findMany({
-        include: {
-          guide: {
-            include: { user: { select: { id: true, name: true, avatar: true } } }
-          }
-        }
-      });
-      
-      const planOrder: Record<string, number> = { 'ultimate': 3, 'pro': 2, 'free': 1 };
-      pkgs.sort((a, b) => {
-          const aBoosted = (a as any).isBoosted || false;
-          const bBoosted = (b as any).isBoosted || false;
-          if (aBoosted && !bBoosted) return -1;
-          if (!aBoosted && bBoosted) return 1;
-          
-          const planA = planOrder[a.guide?.plan || 'free'] || 0;
-          const planB = planOrder[b.guide?.plan || 'free'] || 0;
-          if (planA !== planB) return planB - planA;
-          return 0;
-      });
-      
-      console.log("DB returned in catch:", pkgs.length, "packages.");
-      return pkgs;
-    } catch {
-      return [];
-    }
+    return localPackages;
   }
 }
 
