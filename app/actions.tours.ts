@@ -18,6 +18,34 @@ function getApiUrl() {
   return process.env.GUIDE_API_URL || "https://pguia.onrender.com";
 }
 
+export async function getGuides() {
+  try {
+    return await db.guideProfile.findMany({
+      where: {
+        status: "APPROVED"
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true
+          }
+        },
+        packages: {
+          where: { status: "PUBLISHED" }
+        }
+      },
+      orderBy: {
+        rating: 'desc'
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching guides:", error);
+    return [];
+  }
+}
+
 export async function getFeaturedGuides() {
   try {
     const baseFallback = `${getApiUrl()}/api/public/guides/featured`;
