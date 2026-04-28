@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { getPlace } from "@/app/actions";
 import { Place, Photo, Review, OpeningHours } from "@prisma/client";
+import CommentSection from "@/components/CommentSection";
 
 type CompletePlace = Place & {
   photos?: Photo[];
@@ -328,6 +329,7 @@ export default function PlacePublicPage() {
           )}
           
           {/* Comentários */}
+          <CommentSection placeId={place.id} />
           <div className="space-y-3">
             {place.googleReviews && place.googleReviews.length > 0 ? (
               place.googleReviews.map((rev, i) => (

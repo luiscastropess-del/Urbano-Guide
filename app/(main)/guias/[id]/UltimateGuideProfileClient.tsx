@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
 import Image from "next/image";
+import CommentSection from "@/components/CommentSection";
 
 export default function UltimateGuideProfileClient({ guide }: { guide: any }) {
   const router = useRouter();
@@ -256,47 +257,7 @@ export default function UltimateGuideProfileClient({ guide }: { guide: any }) {
 
           {activeTab === 'avaliacoes' && (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <div className="space-y-3 mb-6">
-                <div className="glass-card rounded-xl p-3">
-                  <div className="flex items-start gap-3">
-                    <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-sm shrink-0">J</div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-sm text-slate-900 dark:text-white">João S.</span>
-                        <span className="text-amber-400 text-[10px] flex gap-0.5"><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i></span>
-                      </div>
-                      <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">&quot;Guia incrível! Conhece cada cantinho de Holambra. Recomendo para todos!&quot;</p>
-                      <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Há 3 dias</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="glass-card rounded-xl p-3">
-                  <div className="flex items-start gap-3">
-                    <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-600 dark:text-green-400 font-bold text-sm shrink-0">M</div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-sm text-slate-900 dark:text-white">Maria C.</span>
-                        <span className="text-amber-400 text-[10px] flex gap-0.5"><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="far fa-star text-slate-300 dark:text-slate-600"></i></span>
-                      </div>
-                      <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">&quot;Passeio maravilhoso, carro flexível e muitas histórias interessantes.&quot;</p>
-                      <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Há 1 semana</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="glass-card rounded-xl p-3">
-                  <div className="flex items-start gap-3">
-                    <div className="h-8 w-8 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold text-sm shrink-0">A</div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-sm text-slate-900 dark:text-white">Ana P.</span>
-                        <span className="text-amber-400 text-[10px] flex gap-0.5"><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i></span>
-                      </div>
-                      <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">&quot;Tour gastronômico imperdível! Comida deliciosa e ótimas histórias.&quot;</p>
-                      <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Há 2 semanas</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <CommentSection guideId={guide.id} />
             </div>
           )}
 

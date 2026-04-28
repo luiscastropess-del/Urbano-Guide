@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Star, MapPin, Share2, Heart, MessageSquare, Info, ExternalLink, ChevronLeft } from "lucide-react";
 import { getCity } from "@/app/actions.tours";
+import CommentSection from "@/components/CommentSection";
 
 export default async function CityProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -149,45 +150,7 @@ export default async function CityProfilePage({ params }: { params: Promise<{ id
 
             {/* Avaliações e Comentários */}
             <section>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-black text-slate-900 dark:text-white">Avaliações</h2>
-                <div className="flex items-center gap-2">
-                  <Star className="text-amber-400 fill-amber-400" size={24} />
-                  <span className="font-black text-2xl dark:text-white">4.8</span>
-                  <span className="text-slate-500 text-sm">/ 5</span>
-                </div>
-              </div>
-              
-              <div className="space-y-4">
-                {/* Mock Avaliações */}
-                {[
-                  { name: "Carlos Eduardo", avatar: "https://i.pravatar.cc/150?u=1", rating: 5, date: "Há 2 dias", text: "Cidade maravilhosa! Recomendo muito os passeios guiados." },
-                  { name: "Ana Beatriz", avatar: "https://i.pravatar.cc/150?u=2", rating: 4, date: "Na semana passada", text: "Ótima infraestrutura para turistas. Só achei alguns preços um pouco altos." },
-                  { name: "Marcos Silva", avatar: "https://i.pravatar.cc/150?u=3", rating: 5, date: "Há 1 mês", text: "Experiência incrível. Sem dúvidas voltarei mais vezes com a minha família." },
-                ].map((review, idx) => (
-                  <div key={idx} className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex gap-3 items-center">
-                        <Image src={review.avatar} alt={review.name} width={40} height={40} className="rounded-full bg-slate-200" />
-                        <div>
-                          <p className="font-bold text-sm text-slate-900 dark:text-white">{review.name}</p>
-                          <p className="text-xs text-slate-500">{review.date}</p>
-                        </div>
-                      </div>
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={14} className={i < review.rating ? "text-amber-400 fill-amber-400" : "text-slate-200 dark:text-slate-700"} />
-                        ))}
-                      </div>
-                    </div>
-                    <p className="text-sm text-slate-600 dark:text-slate-300">{review.text}</p>
-                  </div>
-                ))}
-                
-                <button className="w-full py-4 font-bold text-orange-500 bg-orange-50 dark:bg-orange-500/10 rounded-2xl border border-orange-100 dark:border-orange-500/20 hover:bg-orange-100 dark:hover:bg-orange-500/20 transition">
-                  Ver todas as avaliações
-                </button>
-              </div>
+              <CommentSection cityId={city.id} />
             </section>
           </div>
 

@@ -52,6 +52,7 @@ model Place {
   photos             Photo[]
   googleReviews      Review[]
   routePlaces        RoutePlace[]
+  comments           Comment[]
 }
 
 model Photo {
@@ -144,6 +145,26 @@ model User {
   reservations    Reservation[]     @relation("CustomerReservations")
   reviews         Review[]
   tourReviews     TourReview[]
+  comments        Comment[]
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  text      String
+  rating    Float
+  createdAt DateTime @default(now())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  placeId   String?
+  place     Place?   @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  
+  cityId    String?
+  city      City?    @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  
+  guideId   String?
+  guide     GuideProfile? @relation(fields: [guideId], references: [id], onDelete: Cascade)
 }
 
 model CheckIn {
@@ -201,6 +222,7 @@ model GuideProfile {
   routes         TourRoute[]
   plan           String        @default("free")
   packagesSold   Int           @default(0)
+  comments       Comment[]
 }
 
 model TourRoute {
@@ -309,6 +331,7 @@ model City {
   featured      Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  comments      Comment[]
 }
 
 model Plugin {

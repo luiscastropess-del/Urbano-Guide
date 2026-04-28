@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Star, MapPin, Share2, Heart, MessageSquare, ShieldCheck, Map, Clock, Users, ArrowRight, ChevronLeft, Languages, CheckCircle } from "lucide-react";
 import { getGuide } from "@/app/actions.tours";
+import CommentSection from "@/components/CommentSection";
 import FreeGuideProfileClient from "./FreeGuideProfileClient";
 import ProGuideProfileClient from "./ProGuideProfileClient";
 import UltimateGuideProfileClient from "./UltimateGuideProfileClient";
@@ -114,7 +115,7 @@ export default async function GuideProfilePage({ params }: { params: Promise<{ i
                       <span className="font-black text-slate-900 dark:text-white">{guide.totalKm || 0}km</span>
                    </div>
                 </div>
-             </div>
+              </div>
           </div>
 
           <div className="mt-6 flex flex-col md:flex-row gap-6">
