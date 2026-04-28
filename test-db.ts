@@ -1,21 +1,14 @@
-
 import { db } from './lib/prisma';
-
-async function main() {
+async function test() {
   try {
-    const count = await db.user.count();
-    console.log(`Connection successful. User count: ${count}`);
-    const firstUser = await db.user.findFirst();
-    if (firstUser) {
-      console.log(`First user: ${firstUser.email} (Role: ${firstUser.role})`);
-    } else {
-      console.log('No users found in database.');
-    }
-  } catch (error) {
-    console.error('Connection failed:', error);
-  } finally {
-    process.exit();
+    const res = await db.$queryRaw`SELECT current_database();`;
+    console.log("Current DB:", res);
+    
+    // Check if GuideProfile has the column
+    const cols = await db.$queryRaw`SELECT column_name FROM information_schema.columns WHERE table_name = 'GuideProfile';`;
+    console.log("Columns:", cols);
+  } catch (e) {
+    console.error(e);
   }
 }
-
-main();
+test();
