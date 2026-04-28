@@ -90,11 +90,31 @@ export async function getPublicPackage(id: string) {
       url = url.endsWith("/") ? url + id : url + "/" + id;
     }
     const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      return await db.tourPackage.findUnique({
+        where: { id },
+        include: {
+          guide: {
+            include: { user: { select: { id: true, name: true, avatar: true } } }
+          }
+        }
+      });
+    }
     return await res.json();
   } catch (error) {
     console.error("Error fetching package:", error);
-    return null;
+    try {
+      return await db.tourPackage.findUnique({
+        where: { id },
+        include: {
+          guide: {
+            include: { user: { select: { id: true, name: true, avatar: true } } }
+          }
+        }
+      });
+    } catch {
+      return null;
+    }
   }
 }
 
@@ -103,11 +123,33 @@ export async function getPublicPackages() {
     const baseFallback = `${getApiUrl()}/api/public/packages?limit=50`;
     const url = await getRouteUrl("PACOTES_GERAIS_API", baseFallback);
     const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      return await db.tourPackage.findMany({
+        where: {
+          status: "PUBLISHED"
+        },
+        include: {
+          guide: {
+            include: { user: { select: { id: true, name: true, avatar: true } } }
+          }
+        }
+      });
+    }
     return await res.json();
   } catch (error) {
     console.error("Error fetching packages:", error);
-    return [];
+    try {
+      return await db.tourPackage.findMany({
+        where: { status: "PUBLISHED" },
+        include: {
+          guide: {
+            include: { user: { select: { id: true, name: true, avatar: true } } }
+          }
+        }
+      });
+    } catch {
+      return [];
+    }
   }
 }
 
