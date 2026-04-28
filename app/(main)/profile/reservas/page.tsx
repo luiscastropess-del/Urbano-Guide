@@ -23,7 +23,7 @@ export default function ReservasPage() {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [showToast]);
 
   const getStatusColor = (status: string) => {
     switch (status) {

@@ -248,6 +248,15 @@ export default function ProfilePage() {
           <ProfileLink icon={<Shield className="text-orange-500" size={18} />} label="Privacidade" onClick={() => showToast('🔒 Privacidade')} />
           <ProfileLink icon={<RotateCcw className="text-orange-500" size={18} />} label="Histórico de Compras" onClick={() => showToast('🧾 Histórico')} />
           <ProfileLink icon={<CircleHelp className="text-orange-500" size={18} />} label="Ajuda e Suporte" onClick={() => showToast('❓ Suporte')} />
+          
+          <div className="mt-4 pb-2">
+             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">Parceiros</h4>
+             <ProfileLink 
+               icon={<Crown className="text-emerald-500" size={18} />} 
+               label="Seja um Guia Local" 
+               onClick={() => window.open('https://local-urbano.onrender.com', '_blank')} 
+             />
+          </div>
         </div>
 
         {/* Botão de logout */}

@@ -259,7 +259,7 @@ export default function FreeGuideProfileClient({ guide }: { guide: any }) {
                         <span className="font-bold text-sm text-slate-900 dark:text-white">João S.</span>
                         <span className="text-amber-400 text-[10px] flex gap-0.5"><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i></span>
                       </div>
-                      <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">"Guia incrível! Conhece cada cantinho de Holambra. Recomendo para todos!"</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">&quot;Guia incrível! Conhece cada cantinho de Holambra. Recomendo para todos!&quot;</p>
                       <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Há 3 dias</p>
                     </div>
                   </div>
@@ -272,7 +272,7 @@ export default function FreeGuideProfileClient({ guide }: { guide: any }) {
                         <span className="font-bold text-sm text-slate-900 dark:text-white">Maria C.</span>
                         <span className="text-amber-400 text-[10px] flex gap-0.5"><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="far fa-star text-slate-300 dark:text-slate-600"></i></span>
                       </div>
-                      <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">"Passeio maravilhoso, carro flexível e muitas histórias interessantes."</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">&quot;Passeio maravilhoso, carro flexível e muitas histórias interessantes.&quot;</p>
                       <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Há 1 semana</p>
                     </div>
                   </div>
