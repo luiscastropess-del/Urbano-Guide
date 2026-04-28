@@ -34,17 +34,30 @@ export async function getGuides() {
         },
         packages: {
           where: { status: "PUBLISHED" }
+        },
+        subscriptions: {
+          include: {
+            plan: true
+          },
+          where: {
+            status: "active"
+          },
+          take: 1
         }
       }
     });
 
+    const guidesWithPlan = guides.map(g => ({
+      ...g,
+      plan: g.subscriptions[0]?.plan?.name?.toLowerCase() || 'free'
+    }));
+
     const planOrder: Record<string, number> = { 'ultimate': 3, 'pro': 2, 'free': 1 };
     
-    return guides.sort((a, b) => {
+    return guidesWithPlan.sort((a, b) => {
       const planA = planOrder[a.plan] || 0;
       const planB = planOrder[b.plan] || 0;
       if (planA !== planB) return planB - planA;
-      // Use any for rating since it's added in some db calls as an aggregate or exists in schema
       return ((b as any).rating || 0) - ((a as any).rating || 0);
     });
   } catch (error) {
@@ -60,15 +73,36 @@ export async function getFeaturedGuides() {
       where: {
         AND: [
           { status: "APPROVED" },
-          { plan: { in: ["pro", "ultimate"] } }
+          { 
+            subscriptions: {
+              some: {
+                status: "active",
+                plan: {
+                  name: {
+                    in: ["PRO", "ULTIMATE", "pro", "ultimate"]
+                  }
+                }
+              }
+            }
+          }
         ]
       },
       include: {
         user: {
           select: { id: true, name: true, avatar: true }
+        },
+        subscriptions: {
+          include: { plan: true },
+          where: { status: "active" },
+          take: 1
         }
       }
     });
+
+    localGuides = localGuides.map(g => ({
+      ...g,
+      plan: g.subscriptions[0]?.plan?.name?.toLowerCase() || 'free'
+    }));
   } catch (err) {
     console.error("Local guides fallback error:", err);
   }
@@ -231,13 +265,24 @@ export async function getGuide(id: string) {
         },
         packages: {
           where: { status: "PUBLISHED" }
+        },
+        subscriptions: {
+          include: {
+            plan: true
+          },
+          where: {
+            status: "active"
+          },
+          take: 1
         }
       }
     });
 
+    let gu: any = guide;
+
     // If guide wasn't found by its own ID, maybe the ID passed is the user ID?
-    if (!guide) {
-       const guideByUser = await db.guideProfile.findFirst({
+    if (!gu) {
+       gu = await db.guideProfile.findFirst({
          where: { userId: id },
          include: {
           user: {
@@ -249,13 +294,28 @@ export async function getGuide(id: string) {
           },
           packages: {
             where: { status: "PUBLISHED" }
+          },
+          subscriptions: {
+            include: {
+              plan: true
+            },
+            where: {
+              status: "active"
+            },
+            take: 1
           }
         }
        });
-       return guideByUser;
     }
 
-    return guide;
+    if (gu) {
+      return {
+        ...gu,
+        plan: gu.subscriptions[0]?.plan?.name?.toLowerCase() || 'free'
+      };
+    }
+
+    return null;
   } catch (error) {
     console.error("Error fetching guide:", error);
     return null;

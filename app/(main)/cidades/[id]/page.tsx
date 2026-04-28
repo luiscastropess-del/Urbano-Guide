@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Star, MapPin, Share2, Heart, MessageSquare, Info, ExternalLink, ChevronLeft } from "lucide-react";
 import { getCity } from "@/app/actions.tours";
-import CommentSection from "@/components/CommentSection";
 
 export default async function CityProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -149,8 +148,13 @@ export default async function CityProfilePage({ params }: { params: Promise<{ id
             </section>
 
             {/* Avaliações e Comentários */}
-            <section>
-              <CommentSection cityId={city.id} />
+            <section className="mb-10">
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6">Avaliações</h2>
+              <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-100 dark:border-slate-800 text-center">
+                 <Star className="mx-auto text-slate-300 dark:text-slate-700 mb-3" size={48} />
+                 <h3 className="text-slate-900 dark:text-white font-bold mb-1">Ainda não há avaliações</h3>
+                 <p className="text-slate-500 text-sm">Seja o primeiro a avaliar esta cidade.</p>
+              </div>
             </section>
           </div>
 

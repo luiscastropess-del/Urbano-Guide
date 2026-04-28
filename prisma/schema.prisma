@@ -52,7 +52,6 @@ model Place {
   photos             Photo[]
   googleReviews      Review[]
   routePlaces        RoutePlace[]
-  comments           Comment[]
 }
 
 model Photo {
@@ -127,44 +126,35 @@ model Favorite {
 }
 
 model User {
-  id              String            @id @default(uuid())
-  name            String
-  email           String            @unique
-  password        String
-  role            String            @default("user")
-  avatar          String?
-  level           Int               @default(1)
-  xp              Int               @default(0)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  activities      Activity[]
-  checkins        CheckIn[]
-  DeveloperApiKey DeveloperApiKey[]
-  favorites       Favorite[]
-  guideProfile    GuideProfile?
-  reservations    Reservation[]     @relation("CustomerReservations")
-  reviews         Review[]
-  tourReviews     TourReview[]
-  comments        Comment[]
+  id            String            @id @default(uuid())
+  name          String
+  email         String            @unique
+  password      String
+  role          String            @default("user")
+  avatar        String?
+  level         Int               @default(1)
+  xp            Int               @default(0)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  activities    Activity[]
+  checkins      CheckIn[]
+  favorites     Favorite[]
+  guideProfile  GuideProfile?
+  reservations  Reservation[]     @relation("CustomerReservations")
+  reviews       Review[]
+  tourReviews   TourReview[]
+  developerKeys DeveloperApiKey[]
+  notifications Notification[]
 }
 
-model Comment {
+model DeveloperApiKey {
   id        String   @id @default(uuid())
-  text      String
-  rating    Float
-  createdAt DateTime @default(now())
-  
   userId    String
+  key       String   @unique
+  name      String   @default("Default Key")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  placeId   String?
-  place     Place?   @relation(fields: [placeId], references: [id], onDelete: Cascade)
-  
-  cityId    String?
-  city      City?    @relation(fields: [cityId], references: [id], onDelete: Cascade)
-  
-  guideId   String?
-  guide     GuideProfile? @relation(fields: [guideId], references: [id], onDelete: Cascade)
 }
 
 model CheckIn {
@@ -199,30 +189,87 @@ model UpdateLog {
 }
 
 model GuideProfile {
-  id             String        @id @default(uuid())
-  userId         String        @unique
+  id             String         @id @default(uuid())
+  userId         String         @unique
   bio            String?
   languages      String[]
   pixKey         String?
-  status         String        @default("PENDING")
-  commissionRate Float         @default(0.15)
-  documents      String[]
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  rating         Float?
-  totalKm        Float?        @default(0)
   customColors   String?
-  customDomain   String?
   customFont     String?
+  customDomain   String?
   customSettings String?
-  featured       Boolean       @default(false)
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Subscription   Subscription?
+  status         String         @default("PENDING")
+  commissionRate Float          @default(0.15)
+  documents      String[]
+  rating         Float?
+  totalKm        Float?         @default(0)
+  featured       Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   packages       TourPackage[]
   routes         TourRoute[]
-  plan           String        @default("free")
-  packagesSold   Int           @default(0)
-  comments       Comment[]
+  subscriptions  Subscription[]
+}
+
+model Plan {
+  id                      String         @id @default(uuid())
+  name                    String
+  description             String?
+  price                   Float
+  interval                String         @default("monthly")
+  trialDays               Int            @default(0)
+  features                String[]
+  isActive                Boolean        @default(true)
+  externalPriceId         String?
+  provider                String?
+  maxTours                Int            @default(0)
+  maxFeaturedTours        Int            @default(0)
+  premiumBadge            Boolean        @default(false)
+  priorityVerification    Boolean        @default(false)
+  supportWhatsapp247      Boolean        @default(false)
+  supportEmail            Boolean        @default(false)
+  vipProspector           Boolean        @default(false)
+  advancedAnalytics       Boolean        @default(false)
+  cityMapHighlight        Boolean        @default(false)
+  touristChat             Boolean        @default(false)
+  vipProfileCustomization Boolean        @default(false)
+  publicProfile           Boolean        @default(true)
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+  subscriptions           Subscription[]
+}
+
+model Coupon {
+  id              String         @id @default(uuid())
+  code            String         @unique
+  discountPercent Float?
+  discountAmount  Float?
+  maxUses         Int?
+  usedCount       Int            @default(0)
+  expiresAt       DateTime?
+  isActive        Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  subscriptions   Subscription[]
+}
+
+model Subscription {
+  id                     String   @id @default(uuid())
+  guideId                String   @unique
+  planId                 String
+  status                 String   @default("active")
+  currentPeriodEnd       DateTime
+  cancelAtPeriodEnd      Boolean  @default(false)
+  couponId               String?
+  externalSubscriptionId String?  @unique
+  paymentStatus          String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  guide  GuideProfile @relation(fields: [guideId], references: [id], onDelete: Cascade)
+  plan   Plan         @relation(fields: [planId], references: [id], onDelete: Cascade)
+  coupon Coupon?      @relation(fields: [couponId], references: [id], onDelete: SetNull)
 }
 
 model TourRoute {
@@ -331,7 +378,6 @@ model City {
   featured      Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  comments      Comment[]
 }
 
 model Plugin {
@@ -344,76 +390,20 @@ model Plugin {
   isActive    Boolean  @default(false)
   manifest    String?
   codeHtml    String?
+  settings    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  settings    String?
 }
 
-model Coupon {
-  id              String         @id
-  code            String         @unique
-  discountPercent Float?
-  discountAmount  Float?
-  maxUses         Int?
-  usedCount       Int            @default(0)
-  expiresAt       DateTime?
-  isActive        Boolean        @default(true)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime
-  Subscription    Subscription[]
-}
-
-model DeveloperApiKey {
-  id        String   @id
+model Notification {
+  id        String   @id @default(uuid())
   userId    String
-  key       String   @unique
-  name      String   @default("Default Key")
+  title     String
+  message   String
+  type      String
+  read      Boolean  @default(false)
   createdAt DateTime @default(now())
-  updatedAt DateTime
-  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-model Plan {
-  id                      String         @id
-  name                    String
-  description             String?
-  price                   Float
-  interval                String         @default("monthly")
-  trialDays               Int            @default(0)
-  features                String[]
-  isActive                Boolean        @default(true)
-  externalPriceId         String?
-  provider                String?
-  maxTours                Int            @default(0)
-  maxFeaturedTours        Int            @default(0)
-  premiumBadge            Boolean        @default(false)
-  priorityVerification    Boolean        @default(false)
-  supportWhatsapp247      Boolean        @default(false)
-  supportEmail            Boolean        @default(false)
-  vipProspector           Boolean        @default(false)
-  advancedAnalytics       Boolean        @default(false)
-  cityMapHighlight        Boolean        @default(false)
-  touristChat             Boolean        @default(false)
-  vipProfileCustomization Boolean        @default(false)
-  publicProfile           Boolean        @default(true)
-  createdAt               DateTime       @default(now())
-  updatedAt               DateTime
-  Subscription            Subscription[]
-}
-
-model Subscription {
-  id                     String       @id
-  guideId                String       @unique
-  planId                 String
-  status                 String       @default("active")
-  currentPeriodEnd       DateTime
-  cancelAtPeriodEnd      Boolean      @default(false)
-  couponId               String?
-  externalSubscriptionId String?      @unique
-  paymentStatus          String?
-  createdAt              DateTime     @default(now())
-  updatedAt              DateTime
-  Coupon                 Coupon?      @relation(fields: [couponId], references: [id])
-  GuideProfile           GuideProfile @relation(fields: [guideId], references: [id], onDelete: Cascade)
-  Plan                   Plan         @relation(fields: [planId], references: [id], onDelete: Cascade)
+  @@map("notifications")
 }

@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
 import Image from "next/image";
-import CommentSection from "@/components/CommentSection";
 
 export default function UltimateGuideProfileClient({ guide }: { guide: any }) {
   const router = useRouter();
@@ -257,7 +256,9 @@ export default function UltimateGuideProfileClient({ guide }: { guide: any }) {
 
           {activeTab === 'avaliacoes' && (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <CommentSection guideId={guide.id} />
+              <div className="space-y-3 mb-6">
+                <p className="text-sm text-slate-500 text-center py-8">Nenhuma avaliação recente encontrada para este guia.</p>
+              </div>
             </div>
           )}
 
