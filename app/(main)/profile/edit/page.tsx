@@ -199,18 +199,7 @@ export default function EditProfilePage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1 flex items-center gap-2">
-                <Camera size={16} className="text-orange-500" /> URL do Avatar
-              </label>
-              <input
-                type="text"
-                value={formData.avatar}
-                readOnly
-                className="w-full h-12 px-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none transition-all font-medium text-slate-500 cursor-not-allowed"
-                placeholder="https://exemplo.com/foto.jpg"
-              />
-            </div>
+
           </div>
 
           {/* Dados do Guia (Condicional) */}
