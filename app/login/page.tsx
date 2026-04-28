@@ -98,7 +98,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto relative h-screen flex flex-col bg-white dark:bg-slate-900 shadow-2xl overflow-hidden transition-colors">
+    <div className="max-w-md mx-auto relative min-h-screen flex flex-col bg-white dark:bg-slate-900 shadow-2xl overflow-y-auto transition-colors">
       {/* Background decorativo */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-br from-[#f97316] to-[#22c55e] opacity-10"></div>

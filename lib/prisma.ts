@@ -2,10 +2,8 @@ import { PrismaClient } from '@prisma/client'
 
 const prismaClientSingleton = () => {
   let url = process.env.DATABASE_URL || '';
-  if (url.includes('postgresql://') && url.lastIndexOf('postgresql://') > 0) {
-    url = url.substring(0, url.lastIndexOf('postgresql://'));
-  }
-
+  // No need to clean if it is a single valid URL
+  
   return new PrismaClient({
     datasources: {
       db: {
