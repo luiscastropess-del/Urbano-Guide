@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Star, MapPin, Share2, Heart, MessageSquare, ShieldCheck, Map, Clock, Users, ArrowRight, ChevronLeft, Languages, CheckCircle } from "lucide-react";
 import { getGuide } from "@/app/actions.tours";
 import FreeGuideProfileClient from "./FreeGuideProfileClient";
+import ProGuideProfileClient from "./ProGuideProfileClient";
 
 export default async function GuideProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -16,6 +17,11 @@ export default async function GuideProfilePage({ params }: { params: Promise<{ i
   // Se o guia tem plano gratuito, renderiza a versão da Landing Page Gratuita
   if (guide.plan === 'free') {
     return <FreeGuideProfileClient guide={guide} />;
+  }
+
+  // Se o guia tem plano pro ou ultimate, renderiza a Landing Page PRO baseada no anexo
+  if (guide.plan === 'pro' || guide.plan === 'ultimate') {
+    return <ProGuideProfileClient guide={guide} />;
   }
 
   const profileImage = guide.user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(guide.user?.name || 'Guia')}&size=200&background=F97316&color=fff`;
