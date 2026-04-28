@@ -1,7 +1,18 @@
 import { PrismaClient } from '@prisma/client'
 
 const prismaClientSingleton = () => {
-  return new PrismaClient()
+  let url = process.env.DATABASE_URL || '';
+  if (url.includes('postgresql://') && url.lastIndexOf('postgresql://') > 0) {
+    url = url.substring(0, url.lastIndexOf('postgresql://'));
+  }
+
+  return new PrismaClient({
+    datasources: {
+      db: {
+        url,
+      },
+    },
+  })
 }
 
 declare global {
