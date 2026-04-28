@@ -17,7 +17,7 @@ export async function createReservation({
   const user = await getUserSession();
   if (!user) throw new Error("Unauthorized");
 
-  const apiUrl = "https://pguia.onrender.com";
+  const apiUrl = "https://local-urbano.onrender.com";
 
   const res = await fetch(`${apiUrl}/api/public/reservations`, {
     method: "POST",
@@ -44,7 +44,7 @@ export async function getCustomerReservations() {
   const user = await getUserSession();
   if (!user) throw new Error("Unauthorized");
 
-  const apiUrl = "https://pguia.onrender.com";
+  const apiUrl = "https://local-urbano.onrender.com";
   try {
      const res = await fetch(`${apiUrl}/api/public/reservations?email=${encodeURIComponent(user.email)}`, { 
        cache: "no-store",

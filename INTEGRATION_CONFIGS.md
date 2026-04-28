@@ -1,8 +1,8 @@
 # Configurações de Integração de Plataformas para Agentes Gemini
 
 Este documento contém os prompts de configuração para alinhar os Agentes Gemini (AI) responsáveis pela manutenção e expansão das plataformas complementares do Ecossistema Urbano Holambra:
-- PGuia (https://pguia.onrender.com)
-- AdminGuide (https://adminguide.onrender.com)
+- Guia Local (https://local-urbano.onrender.com)
+- Admin Urbano (https://adm-urbano.onrender.com/)
 
 ## Instruções para o Gemini (PGuia)
 
@@ -18,7 +18,7 @@ O portal central (Urbano Holambra) agora possui perfis dinâmicos para Guias Loc
 O banco de dados oficial contém a coluna `plan` na tabela `GuideProfile` (valores aceitos: `"free", "pro", "ultimate"`).
 
 ### Atualização da UI no PGuia
-Ao exibir o status do plano na Dashboard do Guia local (https://pguia.onrender.com):
+Ao exibir o status do plano na Dashboard do Guia local (https://local-urbano.onrender.com):
 1. **Guias Free**: Emita um card de Upsell "Quer mais visibilidade?" oferecendo os planos `Pro` e detalhe os benefícios da exibição PRO no Urbano Holambra.
 2. **Guias Pro/Ultimate**: Exiba um painel VIP detalhando as visualizações, ressaltando o botão do WhatsApp direto que ganharam na vitrine e as permissões ilimitadas de galerias/vídeos.
 3. **Edição do Perfil**: Liberar o upload de recursos de Vídeo e Galeria ilimitada apenas se o usuário tiver \`plan === "pro" || plan === "ultimate"\`.
@@ -31,7 +31,7 @@ Ao exibir o status do plano na Dashboard do Guia local (https://pguia.onrender.c
 # [SYSTEM] AdminGuide Integration Directives
 
 ### Contexto
-Painel Administrativo da Redes PGuia (https://adminguide.onrender.com). Foram implementadas novas interfaces gratuitas e PRO nos aplicativos cliente do "Urbano Holambra".
+Painel Administrativo da Redes PGuia (https://adm-urbano.onrender.com/). Foram implementadas novas interfaces gratuitas e PRO nos aplicativos cliente do "Urbano Holambra".
 
 ### Ação Imediata: Gestão de Planos
 1. **Nova métrica na Tabela `GuideProfile`:** A coluna `plan` precisa ser visualizável na lista de "Guias Pendentes e Aprovados". Filtros de busca por "Pro" ou "Free" são bem-vindos.

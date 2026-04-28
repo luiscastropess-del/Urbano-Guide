@@ -15,7 +15,7 @@ export async function getRouteUrl(name: string, fallbackUrl: string) {
 }
 
 function getApiUrl() {
-  return process.env.GUIDE_API_URL || "https://pguia.onrender.com";
+  return process.env.GUIDE_API_URL || "https://local-urbano.onrender.com";
 }
 
 export async function getGuides() {
