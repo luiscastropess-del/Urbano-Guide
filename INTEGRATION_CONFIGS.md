@@ -13,6 +13,7 @@ Este documento contém os prompts de configuração para alinhar os Agentes Gemi
 O portal central (Urbano Holambra) agora possui perfis dinâmicos para Guias Locais que suportam **Planos de Assinatura (Free e Pro/Ultimate)**. 
 - A vitrine **gratuita** baseia-se num modelo de *Profile Glassmorphism* focado apenas na divulgação do currículo e restrições de pacotes.
 - A vitrine **PRO** possui badges exclusivos, contato direto via botão WhatsApp e liberação ilimitada de vídeos, galerias, pacotes e roteiros.
+- A vitrine **ULTIMATE** baseia-se num design premium focado em alta conversão. Contém banner diferenciado de fundo, selos VIP e FAQ interativa (além de liberação ilimitada de todos os recursos da Pro).
 
 ### Ação Imediata na Base de Dados
 O banco de dados oficial contém a coluna `plan` na tabela `GuideProfile` (valores aceitos: `"free", "pro", "ultimate"`).

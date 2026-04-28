@@ -5,6 +5,7 @@ import { Star, MapPin, Share2, Heart, MessageSquare, ShieldCheck, Map, Clock, Us
 import { getGuide } from "@/app/actions.tours";
 import FreeGuideProfileClient from "./FreeGuideProfileClient";
 import ProGuideProfileClient from "./ProGuideProfileClient";
+import UltimateGuideProfileClient from "./UltimateGuideProfileClient";
 
 export default async function GuideProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -19,8 +20,13 @@ export default async function GuideProfilePage({ params }: { params: Promise<{ i
     return <FreeGuideProfileClient guide={guide} />;
   }
 
-  // Se o guia tem plano pro ou ultimate, renderiza a Landing Page PRO baseada no anexo
-  if (guide.plan === 'pro' || guide.plan === 'ultimate') {
+  // Se o guia tem plano ultimate, renderiza a Landing Page Ultimate baseada no anexo
+  if (guide.plan === 'ultimate') {
+    return <UltimateGuideProfileClient guide={guide} />;
+  }
+
+  // Se o guia tem plano pro, renderiza a Landing Page PRO
+  if (guide.plan === 'pro') {
     return <ProGuideProfileClient guide={guide} />;
   }
 
