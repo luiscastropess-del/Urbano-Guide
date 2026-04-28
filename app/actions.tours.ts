@@ -20,7 +20,7 @@ function getApiUrl() {
 
 export async function getGuides() {
   try {
-    return await db.guideProfile.findMany({
+    const guides = await db.guideProfile.findMany({
       where: {
         status: "APPROVED"
       },
@@ -35,10 +35,16 @@ export async function getGuides() {
         packages: {
           where: { status: "PUBLISHED" }
         }
-      },
-      orderBy: {
-        rating: 'desc'
       }
+    });
+
+    const planOrder: Record<string, number> = { 'ultimate': 3, 'pro': 2, 'free': 1 };
+
+    return guides.sort((a, b) => {
+      const planA = planOrder[a.plan] || 0;
+      const planB = planOrder[b.plan] || 0;
+      if (planA !== planB) return planB - planA;
+      return (b.rating || 0) - (a.rating || 0);
     });
   } catch (error) {
     console.error("Error fetching guides:", error);
@@ -143,6 +149,15 @@ export async function getPublicPackages() {
             }
           }
         });
+        
+        const planOrder: Record<string, number> = { 'ultimate': 3, 'pro': 2, 'free': 1 };
+        
+        pkgs.sort((a, b) => {
+           const planA = planOrder[a.guide?.plan || 'free'] || 0;
+           const planB = planOrder[b.guide?.plan || 'free'] || 0;
+           return planB - planA;
+        });
+        
         console.log("DB returned:", pkgs.length, "packages.");
         return pkgs;
       } catch (err) {
