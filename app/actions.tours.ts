@@ -87,7 +87,11 @@ export async function getFeaturedGuides() {
           return planB - planA;
         });
       } catch (dbError) {
-        console.error("Database fallback error in getFeaturedGuides:", dbError);
+        console.error("Database fallback error in getFeaturedGuides details:", {
+          message: dbError instanceof Error ? dbError.message : String(dbError),
+          code: (dbError as any).code,
+          meta: (dbError as any).meta
+        });
         return [];
       }
     }
@@ -163,8 +167,10 @@ export async function getPublicPackages() {
         
         pkgs.sort((a, b) => {
            // 1. Boosted Priority
-           if (a.isBoosted && !b.isBoosted) return -1;
-           if (!a.isBoosted && b.isBoosted) return 1;
+           const aBoosted = (a as any).isBoosted || false;
+           const bBoosted = (b as any).isBoosted || false;
+           if (aBoosted && !bBoosted) return -1;
+           if (!aBoosted && bBoosted) return 1;
 
            // 2. Plan Priority
            const planA = planOrder[a.guide?.plan || 'free'] || 0;
@@ -223,8 +229,11 @@ export async function getPublicPackages() {
       
       const planOrder: Record<string, number> = { 'ultimate': 3, 'pro': 2, 'free': 1 };
       pkgs.sort((a, b) => {
-          if (a.isBoosted && !b.isBoosted) return -1;
-          if (!a.isBoosted && b.isBoosted) return 1;
+          const aBoosted = (a as any).isBoosted || false;
+          const bBoosted = (b as any).isBoosted || false;
+          if (aBoosted && !bBoosted) return -1;
+          if (!aBoosted && bBoosted) return 1;
+          
           const planA = planOrder[a.guide?.plan || 'free'] || 0;
           const planB = planOrder[b.guide?.plan || 'free'] || 0;
           if (planA !== planB) return planB - planA;

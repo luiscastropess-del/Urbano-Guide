@@ -5,59 +5,60 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // directUrl = env("DIRECT_URL")
 }
 
 model Place {
-  id                 String   @id @default(uuid())
-  googlePlaceId      String?  @unique // Chave para evitar duplicatas do Google
-  name               String
-  emoji              String   @default("📍")
-  rating             Float?
-  userRatingsTotal   Int?     @default(0)
-  priceLevel         Int?
-  reviews            String? // Legado
-  distance           String? // Legado
-  type               String   @default("Lugar")
-  types              String[] // Suportado no Postgres: Array com categorias exatas (restaurant, cafe)
-  featured           Boolean  @default(false)
-  premium            Boolean  @default(false)
-  description        String?
-  editorialSummary   String? // Descrição feita por editores do Google
-  tags               String?
+  id                 String        @id @default(uuid())
   address            String?
-  city               String?
-  state              String?
   cep                String?
-  phone              String?
-  internationalPhone String?
-  instagram          String?
-  website            String?
-  email              String?
-  plan               String   @default("free")
+  city               String?
   coverImage         String?
+  description        String?
+  distance           String?
+  email              String?
+  emoji              String        @default("📍")
+  featured           Boolean       @default(false)
+  images             String?
+  instagram          String?
+  name               String
+  phone              String?
+  plan               String        @default("free")
+  premium            Boolean       @default(false)
+  rating             Float?
+  reviews            String?
+  state              String?
+  tags               String?
+  type               String        @default("Lugar")
+  website            String?
+  createdAt          DateTime      @default(now())
+  editorialSummary   String?
+  googlePlaceId      String?       @unique
+  internationalPhone String?
+  priceLevel         Int?
+  types              String[]
+  updatedAt          DateTime      @default(now()) @updatedAt
+  userRatingsTotal   Int?          @default(0)
   profileImage       String?
-  images             String? // Legado
-
-  // Novos Relacionamentos
-  photos        Photo[]
-  googleReviews Review[]
-  openingHours  OpeningHours?
-  menuLink      MenuLink?
-  favorites     Favorite[]
-  checkins      CheckIn[]
-  activities    Activity[]
-  routePlaces   RoutePlace[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  category           String?
+  last_updated       DateTime?     @default(now())
+  opening_hours      String?
+  osm_id             String?       @unique
+  photo_url          String?
+  activities         Activity[]
+  checkins           CheckIn[]
+  favorites          Favorite[]
+  menuLink           MenuLink?
+  openingHours       OpeningHours?
+  photos             Photo[]
+  googleReviews      Review[]
+  routePlaces        RoutePlace[]
 }
 
 model Photo {
   id               String   @id @default(uuid())
-  url              String // URL pública do Google Cloud Storage
-  googleRef        String? // Referência original para checagem
-  htmlAttributions String[] // Créditos exigidos pelos direitos autorais
+  url              String
+  googleRef        String?
+  htmlAttributions String[]
   placeId          String
   place            Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
 }
@@ -66,18 +67,18 @@ model Review {
   id                  String  @id @default(uuid())
   authorName          String
   authorPhotoUrl      String?
-  rating              Float?
+  rating              Float
   text                String
   relativePublishTime String?
   placeId             String
-  place               Place   @relation(fields: [placeId], references: [id], onDelete: Cascade)
   userId              String?
+  place               Place   @relation(fields: [placeId], references: [id], onDelete: Cascade)
   user                User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model OpeningHours {
   id          String   @id @default(uuid())
-  weekdayText String[] // Array do tipo ["Seg: 09:00 - 18:00", ...]
+  weekdayText String[]
   openNow     Boolean  @default(false)
   placeId     String   @unique
   place       Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
@@ -113,170 +114,172 @@ model Event {
 
 model Favorite {
   id         String   @id @default(uuid())
-  placeId    String
-  place      Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
-  userId     String?
-  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  note       String?
   collection String   @default("Todos")
   createdAt  DateTime @default(now())
-  note       String?
+  placeId    String
+  userId     String?
+  place      Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([placeId, userId])
 }
 
 model User {
-  id         String     @id @default(uuid())
-  name       String
-  email      String     @unique
-  password   String
-  role       String     @default("user") // "admin", "guide", "user"
-  avatar     String?
-  level      Int        @default(1)
-  xp         Int        @default(0)
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  favorites  Favorite[]
-  reviews    Review[]
-  checkins   CheckIn[]
-  activities Activity[]
-
-  guideProfile GuideProfile?
-  reservations Reservation[] @relation("CustomerReservations")
-  tourReviews  TourReview[]
+  id              String            @id @default(uuid())
+  name            String
+  email           String            @unique
+  password        String
+  role            String            @default("user")
+  avatar          String?
+  level           Int               @default(1)
+  xp              Int               @default(0)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  activities      Activity[]
+  checkins        CheckIn[]
+  DeveloperApiKey DeveloperApiKey[]
+  favorites       Favorite[]
+  guideProfile    GuideProfile?
+  reservations    Reservation[]     @relation("CustomerReservations")
+  reviews         Review[]
+  tourReviews     TourReview[]
 }
 
 model CheckIn {
   id        String   @id @default(uuid())
   placeId   String
-  place     Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  place     Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Activity {
   id          String   @id @default(uuid())
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type        String // "CHECK_IN", "FAVORITE", "REVIEW", "LEVEL_UP", "JOIN"
+  type        String
   placeId     String?
-  place       Place?   @relation(fields: [placeId], references: [id], onDelete: SetNull)
   description String?
   xpEarned    Int      @default(0)
   createdAt   DateTime @default(now())
+  place       Place?   @relation(fields: [placeId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UpdateLog {
   id        String   @id @default(uuid())
   version   String
   fileName  String
-  status    String // "SUCCESS", "FAILED", "ROLLBACK"
+  status    String
   duration  String?
-  logOutput String?  @db.Text
+  logOutput String?
   createdAt DateTime @default(now())
 }
 
 model GuideProfile {
   id             String        @id @default(uuid())
   userId         String        @unique
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bio            String?       @db.Text
+  bio            String?
   languages      String[]
   pixKey         String?
-  status         String        @default("PENDING") // PENDING, APPROVED, REJECTED, BLOCKED
-  commissionRate Float         @default(0.15) // 15% default fee
-  documents      String[] // URLs to documents
-  plan           String        @default("free") // free, pro, ultimate
-  rating         Float?        @default(5.0)
-  packagesSold   Int           @default(0)
-  totalKm        Int           @default(0)
+  status         String        @default("PENDING")
+  commissionRate Float         @default(0.15)
+  documents      String[]
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
-  routes         TourRoute[]
+  rating         Float?
+  totalKm        Float?        @default(0)
+  customColors   String?
+  customDomain   String?
+  customFont     String?
+  customSettings String?
+  featured       Boolean       @default(false)
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Subscription   Subscription?
   packages       TourPackage[]
+  routes         TourRoute[]
+  plan           String        @default("free")
+  packagesSold   Int           @default(0)
 }
 
 model TourRoute {
-  id              String       @id @default(uuid())
+  id              String        @id @default(uuid())
   guideId         String
-  guide           GuideProfile @relation(fields: [guideId], references: [id], onDelete: Cascade)
   title           String
-  description     String?      @db.Text
+  description     String?
   durationMinutes Int?
-  status          String       @default("DRAFT") // DRAFT, PUBLISHED
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-
-  places   RoutePlace[]
-  packages TourPackage[]
+  status          String        @default("DRAFT")
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  places          RoutePlace[]
+  guide           GuideProfile  @relation(fields: [guideId], references: [id], onDelete: Cascade)
+  packages        TourPackage[] @relation("TourPackageToTourRoute")
 }
 
 model RoutePlace {
   id      String    @id @default(uuid())
   routeId String
-  route   TourRoute @relation(fields: [routeId], references: [id], onDelete: Cascade)
   placeId String
+  order   Int       @default(0)
+  notes   String?
   place   Place     @relation(fields: [placeId], references: [id], onDelete: Cascade)
-  order   Int       @default(0) // Order in the route
-  notes   String?   @db.Text // Guide notes for this specific place
+  route   TourRoute @relation(fields: [routeId], references: [id], onDelete: Cascade)
 
   @@unique([routeId, placeId])
 }
 
 model TourPackage {
-  id           String       @id @default(uuid())
+  id           String        @id @default(uuid())
   guideId      String
-  guide        GuideProfile @relation(fields: [guideId], references: [id], onDelete: Cascade)
   title        String
-  description  String?      @db.Text
+  description  String?
   price        Float
-  durationDays Int          @default(1)
-  maxPeople    Int          @default(10)
-  minPeople    Int          @default(1)
-  status       String       @default("DRAFT") // DRAFT, PUBLISHED
-  isBoosted    Boolean      @default(false)
+  durationDays Int           @default(1)
+  maxPeople    Int           @default(10)
+  minPeople    Int           @default(1)
+  status       String        @default("DRAFT")
   images       String[]
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-
-  routes       TourRoute[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   reservations Reservation[]
+  guide        GuideProfile  @relation(fields: [guideId], references: [id], onDelete: Cascade)
   reviews      TourReview[]
+  routes       TourRoute[]   @relation("TourPackageToTourRoute")
 }
 
 model Reservation {
   id         String      @id @default(uuid())
   customerId String
-  customer   User        @relation("CustomerReservations", fields: [customerId], references: [id], onDelete: Cascade)
   packageId  String
-  package    TourPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
   date       DateTime
-  status     String      @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED
+  status     String      @default("PENDING")
   totalPrice Float
   guests     Int         @default(1)
-  notes      String?     @db.Text
+  notes      String?
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
-
-  review TourReview?
+  customer   User        @relation("CustomerReservations", fields: [customerId], references: [id], onDelete: Cascade)
+  package    TourPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  review     TourReview?
 }
 
 model TourReview {
   id            String      @id @default(uuid())
   reservationId String      @unique
-  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
   packageId     String
-  package       TourPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
   customerId    String
-  customer      User        @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  rating        Float?
-  comment       String?     @db.Text
+  rating        Float
+  comment       String?
   createdAt     DateTime    @default(now())
+  customer      User        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  package       TourPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
 }
 
 model ApiKey {
   id          String   @id @default(uuid())
-  provider    String   @unique // e.g., "GOOGLE_MAPS", "OPENROUTER", "STRIPE"
+  provider    String   @unique
   key         String
   description String?
   isActive    Boolean  @default(true)
@@ -286,7 +289,7 @@ model ApiKey {
 
 model ApiRoute {
   id          String   @id @default(uuid())
-  name        String   @unique // e.g., "PROSPECT_API"
+  name        String   @unique
   url         String
   method      String   @default("GET")
   description String?
@@ -299,7 +302,7 @@ model City {
   id            String   @id @default(uuid())
   name          String
   state         String?
-  description   String?  @db.Text
+  description   String?
   profileImage  String?
   coverImage    String?
   galleryImages String[]
@@ -312,12 +315,82 @@ model Plugin {
   id          String   @id @default(uuid())
   name        String   @unique
   slug        String   @unique
-  description String?  @db.Text
+  description String?
   version     String   @default("1.0.0")
   author      String?
   isActive    Boolean  @default(false)
-  manifest    String?  @db.Text // JSON config
-  codeHtml    String?  @db.Text // Iframe code
+  manifest    String?
+  codeHtml    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  settings    String?
+}
+
+model Coupon {
+  id              String         @id
+  code            String         @unique
+  discountPercent Float?
+  discountAmount  Float?
+  maxUses         Int?
+  usedCount       Int            @default(0)
+  expiresAt       DateTime?
+  isActive        Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime
+  Subscription    Subscription[]
+}
+
+model DeveloperApiKey {
+  id        String   @id
+  userId    String
+  key       String   @unique
+  name      String   @default("Default Key")
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Plan {
+  id                      String         @id
+  name                    String
+  description             String?
+  price                   Float
+  interval                String         @default("monthly")
+  trialDays               Int            @default(0)
+  features                String[]
+  isActive                Boolean        @default(true)
+  externalPriceId         String?
+  provider                String?
+  maxTours                Int            @default(0)
+  maxFeaturedTours        Int            @default(0)
+  premiumBadge            Boolean        @default(false)
+  priorityVerification    Boolean        @default(false)
+  supportWhatsapp247      Boolean        @default(false)
+  supportEmail            Boolean        @default(false)
+  vipProspector           Boolean        @default(false)
+  advancedAnalytics       Boolean        @default(false)
+  cityMapHighlight        Boolean        @default(false)
+  touristChat             Boolean        @default(false)
+  vipProfileCustomization Boolean        @default(false)
+  publicProfile           Boolean        @default(true)
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime
+  Subscription            Subscription[]
+}
+
+model Subscription {
+  id                     String       @id
+  guideId                String       @unique
+  planId                 String
+  status                 String       @default("active")
+  currentPeriodEnd       DateTime
+  cancelAtPeriodEnd      Boolean      @default(false)
+  couponId               String?
+  externalSubscriptionId String?      @unique
+  paymentStatus          String?
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime
+  Coupon                 Coupon?      @relation(fields: [couponId], references: [id])
+  GuideProfile           GuideProfile @relation(fields: [guideId], references: [id], onDelete: Cascade)
+  Plan                   Plan         @relation(fields: [planId], references: [id], onDelete: Cascade)
 }
