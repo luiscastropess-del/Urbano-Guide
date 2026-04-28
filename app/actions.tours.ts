@@ -39,12 +39,13 @@ export async function getGuides() {
     });
 
     const planOrder: Record<string, number> = { 'ultimate': 3, 'pro': 2, 'free': 1 };
-
+    
     return guides.sort((a, b) => {
       const planA = planOrder[a.plan] || 0;
       const planB = planOrder[b.plan] || 0;
       if (planA !== planB) return planB - planA;
-      return (b.rating || 0) - (a.rating || 0);
+      // Use any for rating since it's added in some db calls as an aggregate or exists in schema
+      return ((b as any).rating || 0) - ((a as any).rating || 0);
     });
   } catch (error) {
     console.error("Error fetching guides:", error);
@@ -161,9 +162,16 @@ export async function getPublicPackages() {
         const planOrder: Record<string, number> = { 'ultimate': 3, 'pro': 2, 'free': 1 };
         
         pkgs.sort((a, b) => {
+           // 1. Boosted Priority
+           if (a.isBoosted && !b.isBoosted) return -1;
+           if (!a.isBoosted && b.isBoosted) return 1;
+
+           // 2. Plan Priority
            const planA = planOrder[a.guide?.plan || 'free'] || 0;
            const planB = planOrder[b.guide?.plan || 'free'] || 0;
-           return planB - planA;
+           if (planA !== planB) return planB - planA;
+           
+           return 0;
         });
         
         console.log("DB returned:", pkgs.length, "packages.");
@@ -189,9 +197,16 @@ export async function getPublicPackages() {
     const planOrder: Record<string, number> = { 'ultimate': 3, 'pro': 2, 'free': 1 };
 
     packages.sort((a, b) => {
+        // 1. Boosted Priority
+        if (a.isBoosted && !b.isBoosted) return -1;
+        if (!a.isBoosted && b.isBoosted) return 1;
+
+        // 2. Plan Priority
         const planA = planOrder[a.guide?.plan || 'free'] || 0;
         const planB = planOrder[b.guide?.plan || 'free'] || 0;
-        return planB - planA;
+        if (planA !== planB) return planB - planA;
+        
+        return 0;
     });
 
     return packages;
@@ -205,6 +220,17 @@ export async function getPublicPackages() {
           }
         }
       });
+      
+      const planOrder: Record<string, number> = { 'ultimate': 3, 'pro': 2, 'free': 1 };
+      pkgs.sort((a, b) => {
+          if (a.isBoosted && !b.isBoosted) return -1;
+          if (!a.isBoosted && b.isBoosted) return 1;
+          const planA = planOrder[a.guide?.plan || 'free'] || 0;
+          const planB = planOrder[b.guide?.plan || 'free'] || 0;
+          if (planA !== planB) return planB - planA;
+          return 0;
+      });
+      
       console.log("DB returned in catch:", pkgs.length, "packages.");
       return pkgs;
     } catch {
@@ -216,7 +242,8 @@ export async function getPublicPackages() {
 export async function getPremiumPackages() {
   try {
     const pkgs = await getPublicPackages();
-    return pkgs.filter((p: any) => p.status === "PREMIUM").slice(0, 10);
+    // Prioritize boosted packages for the "Premium" category
+    return pkgs.filter((p: any) => p.isBoosted || p.guide?.plan === 'ultimate').slice(0, 10);
   } catch (error) {
     console.error("Error fetching premium packages:", error);
     return [];

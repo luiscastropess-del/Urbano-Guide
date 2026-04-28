@@ -234,6 +234,7 @@ model TourPackage {
   maxPeople    Int          @default(10)
   minPeople    Int          @default(1)
   status       String       @default("DRAFT") // DRAFT, PUBLISHED
+  isBoosted    Boolean      @default(false)
   images       String[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt

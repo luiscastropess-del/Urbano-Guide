@@ -299,7 +299,12 @@ export default function PacotesPage() {
           ) : (
             <div className="space-y-4">
               {packages.map(pkg => (
-                <div key={pkg.id} onClick={() => router.push(`/pacotes/${pkg.id}`)} className="bg-white/70 dark:bg-slate-800/70 border border-white/20 dark:border-slate-800 backdrop-blur-md rounded-3xl p-4 shadow-sm cursor-pointer group hover:border-orange-500 transition-all">
+                <div key={pkg.id} onClick={() => router.push(`/pacotes/${pkg.id}`)} className="bg-white/70 dark:bg-slate-800/70 border border-white/20 dark:border-slate-800 backdrop-blur-md rounded-3xl p-4 shadow-sm cursor-pointer group hover:border-orange-500 transition-all relative overflow-hidden">
+                  {pkg.isBoosted && (
+                    <div className="absolute top-0 right-0 bg-orange-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl z-10 shadow-sm animate-pulse">
+                      PATROCINADO
+                    </div>
+                  )}
                   <div className="flex justify-between items-start mb-2">
                      <div>
                        <h4 className="font-bold text-lg group-hover:text-orange-500 transition-colors">{pkg.title}</h4>
