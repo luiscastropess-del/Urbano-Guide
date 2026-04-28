@@ -116,24 +116,55 @@ export default function EditProfilePage() {
           {/* Avatar Section */}
           <div className="flex flex-col items-center mb-8">
             <div className="relative">
-              <div className="h-28 w-28 rounded-full bg-slate-200 dark:bg-slate-800 p-1 shadow-lg overflow-hidden relative">
-                {formData.avatar ? (
-                  <Image 
-                    src={formData.avatar} 
-                    alt="Preview" 
-                    fill 
-                    className="object-cover" 
-                    onError={() => setFormData({ ...formData, avatar: "" })}
-                  />
-                ) : (
-                  <div className="h-full w-full flex items-center justify-center text-4xl">👩🏻‍🌾</div>
-                )}
-              </div>
-              <div className="absolute -bottom-1 -right-1 h-9 w-9 rounded-full bg-orange-500 text-white shadow-md flex items-center justify-center border-2 border-white dark:border-slate-900">
-                <Camera size={16} />
-              </div>
+              <label htmlFor="avatar-upload" className="cursor-pointer">
+                <div className="h-28 w-28 rounded-full bg-slate-200 dark:bg-slate-800 p-1 shadow-lg overflow-hidden relative">
+                  {formData.avatar ? (
+                    <Image 
+                      src={formData.avatar} 
+                      alt="Preview" 
+                      fill 
+                      className="object-cover" 
+                      onError={() => setFormData({ ...formData, avatar: "" })}
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center text-4xl">👩🏻‍🌾</div>
+                  )}
+                </div>
+                <div className="absolute -bottom-1 -right-1 h-9 w-9 rounded-full bg-orange-500 text-white shadow-md flex items-center justify-center border-2 border-white dark:border-slate-900 transition-transform hover:scale-105 active:scale-95">
+                  <Camera size={16} />
+                </div>
+              </label>
+              <input 
+                id="avatar-upload" 
+                type="file" 
+                accept="image/*" 
+                className="hidden" 
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  
+                  showToast("⏳ Enviando imagem...");
+                  try {
+                    const fd = new FormData();
+                    fd.append("file", file);
+                    const res = await fetch("/api/upload", {
+                      method: "POST",
+                      body: fd
+                    });
+                    
+                    if (!res.ok) throw new Error("Falha no upload");
+                    const data = await res.json();
+                    
+                    setFormData({ ...formData, avatar: data.url });
+                    showToast("✅ Imagem enviada com sucesso!");
+                  } catch (err) {
+                    showToast("❌ Erro ao enviar imagem");
+                    console.error(err);
+                  }
+                }} 
+              />
             </div>
-            <p className="text-xs text-slate-500 mt-3">Sua foto de perfil</p>
+            <p className="text-xs text-slate-500 mt-3">Clique na foto para alterar</p>
           </div>
 
           {/* Dados Pessoais */}
@@ -175,8 +206,8 @@ export default function EditProfilePage() {
               <input
                 type="text"
                 value={formData.avatar}
-                onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
-                className="w-full h-12 px-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-medium"
+                readOnly
+                className="w-full h-12 px-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none transition-all font-medium text-slate-500 cursor-not-allowed"
                 placeholder="https://exemplo.com/foto.jpg"
               />
             </div>
